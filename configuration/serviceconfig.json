@@ -13,17 +13,5 @@
     "logfile": {
         "NAME": "hbchatbot.log",
         "SIZE": 10485760
-    },
-    "defaultValue": {
-        "dobFormat": "YYYY-MM-DD",
-        "dateOfServiceFormat": "YYYY-MM-DD HH:mm:ss"
-    },
-    "cachekeys": {
-        "MASTERAIPROVIDER": "MASTERAIPROVIDER",
-        "WATISERVER": "WATISERVER"
-    },
-    "invoice_description": {
-        "1": "Yoga Everyday",
-        "2": "Face Tone"
     }
 }

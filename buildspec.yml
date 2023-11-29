@@ -18,7 +18,7 @@ phases:
             - aws ecs register-task-definition --cli-input-json file://./task-def.json
 
             - echo update ecs service with new task def
-            - aws ecs update-service --service hbmemberclassjoin --task-definition hbchatbot --cluster memberclassjoin-ec2-cluster
+            - aws ecs update-service --service hbchatbotservice --task-definition hbchatbot --cluster hbchatbot-ec2-cluster
 
 artifacts:
     files:

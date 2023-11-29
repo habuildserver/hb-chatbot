@@ -5,8 +5,7 @@ module.exports = () => {
     return (err, req, res, next) => {
         HBLogger.error(
             `HBLogTrack: ${JSON.stringify({
-                servicename: 'habuild-member-management',
-                // logrequestid: req.headers["request-id"],
+                servicename: 'hbchatbot',
                 logtype: 'error',
                 logdate: new Date(),
                 logdetails: {

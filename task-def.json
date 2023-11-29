@@ -7,9 +7,9 @@
             "essential": true,
             "portMappings": [
                 {
-                    "hostPort": 3006,
+                    "hostPort": 3013,
                     "protocol": "tcp",
-                    "containerPort": 3006
+                    "containerPort": 3013
                 }
             ],
 
@@ -19,15 +19,18 @@
                     "awslogs-group": "hbchatbot",
                     "awslogs-region": "ap-south-1",
                     "awslogs-create-group": "true",
-                    "awslogs-stream-prefix": "habuild-memberclassjoin-api"
+                    "awslogs-stream-prefix": "habuild-hbchatbot-api"
                 }
             }
         }
     ],
 
-    "requiresCompatibilities": ["EXTERNAL", "EC2"],
-
-    "cpu": "3000",
-    "memory": "3000",
+    "requiresCompatibilities": [
+        "EXTERNAL",
+        "EC2"
+    ],
+    
+    "cpu": "800",
+    "memory": "800",
     "family": "hbchatbot"
 }

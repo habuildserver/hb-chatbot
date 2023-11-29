@@ -1,7 +1,7 @@
 {
   "name": "hbchatbot",
   "version": "1.0.0",
-  "description": "habuild member apis and member scheulers ",
+  "description": "habuild chabot apis",
   "main": "server.js",
   "scripts": {
     "test": "",

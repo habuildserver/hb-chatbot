@@ -7,7 +7,6 @@ module.exports = () => {
         HBLogger.info(
             `HBLogTrack: ${JSON.stringify({
                 servicename: 'HBLogTrack',
-                // logrequestid: req.headers[serviceconfig.constants.requestID],
                 logtype: 'response',
                 logdate: new Date(),
                 logdetails: {

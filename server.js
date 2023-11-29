@@ -70,12 +70,10 @@ app.use(errorHandler());
 
 const server = http.createServer(app);
 
-server.listen(parseInt(process.env.HABUILD_MEMBER_CLASS_PORT), function () {
+server.listen(parseInt(process.env.HABUILD_CHATBOT_PORT), function () {
     console.log(
-        `hbchatbot Server Started on port ${process.env.HABUILD_MEMBER_CLASS_PORT}`
+        `hbchatbot Server Started on port ${process.env.HABUILD_CHATBOT_PORT}`
     );
 });
-
-server.setTimeout(20 * 60 * 1000); //// 20 minutest
 
 module.exports = server;

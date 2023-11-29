@@ -19,7 +19,7 @@ const configlevels = {
 
 const logger = createLogger({
     levels: configlevels,
-    format: combine(label({ label: 'HBMEMBERMGT' }), timestamp(), myFormat),
+    format: combine(label({ label: 'HBCHATBOT' }), timestamp(), myFormat),
     transports: [
         new transports.Console(),
         new transports.File({
