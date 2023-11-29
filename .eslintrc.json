@@ -15,6 +15,12 @@
         "no-unused-vars": "error",
         "no-unreachable": "warn",
         "no-prototype-builtins": "warn",
-        "prettier/prettier": "warn"
-    }
+        "prettier/prettier":  [
+            "warn",
+            {
+              "singleQuote": true,
+              "parser": "flow"
+            }
+          ]
+    },
 }

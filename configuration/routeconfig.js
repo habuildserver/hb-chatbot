@@ -1,9 +1,9 @@
- const { memberRoutes } = require(process.cwd() + '/member/memberservice');
+const { memberRoutes } = require(process.cwd() + '/member/memberservice');
 const HBLogger = require(process.cwd() + '/utility/logger').logger;
 const { requestWatch } = require(process.cwd() + '/utility/commonfunctions');
 
 module.exports = (app) => {
-    let routes = [  ...memberRoutes ]
+    let routes = [...memberRoutes];
 
     routes.forEach((route) => {
         app[route.type](
@@ -21,9 +21,9 @@ module.exports = (app) => {
                             query: JSON.stringify(req.query),
                         },
                     })}`
-                )
+                );
                 //// Below code is to bypass the auth middleware.
-                await route.controller(req, res, next)
+                await route.controller(req, res, next);
 
                 // if (
                 //     process.env.BY_PASS_AUTH_ENDPOINTS &&
@@ -38,6 +38,6 @@ module.exports = (app) => {
                 //     }
                 // }
             })
-        )
-    })
-}
+        );
+    });
+};

@@ -1,5 +1,5 @@
-const { Pool } = require('pg')
-const db = () => {}
+const { Pool } = require('pg');
+const db = () => {};
 
 // Executes the given parameterized query.
 db.executeNonQuery = async (queryText, values) => {
@@ -9,10 +9,10 @@ db.executeNonQuery = async (queryText, values) => {
         database: process.env.DB_DATABASE,
         password: process.env.DB_PASSWORD,
         port: process.env.DB_PORT,
-    })
-    const response = await pool.query(queryText, values)
-    await pool.end()
-    return response
-}
+    });
+    const response = await pool.query(queryText, values);
+    await pool.end();
+    return response;
+};
 
-module.exports = db
+module.exports = db;

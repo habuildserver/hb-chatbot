@@ -13,10 +13,8 @@ const ADD_REDIRECTION_SHORTLINK_LOGS =
     'SELECT * from public.addredirectionshortlinklog($1);';
 
 const GET_WEEK_REDIRECT_LOGS = `select id,member_id,created_at,useragent from habuild_redirect_shortlinks_logs_week23oct hrsl where device is null and  useragent is not null order by created_at;`;
- 
 
 const UPDATE_DEVICE_IN_REDIRECT_LOGS = `select * from updateMemberDeviceDetails($1)`;
-
 
 module.exports = {
     GET_SHORT_LINK_DETAILS_ROUTE_BY_ROUTE,
@@ -24,5 +22,5 @@ module.exports = {
     ADD_REDIRECTION_SHORTLINK_LOGS,
     GET_DS_YT_LINK,
     GET_WEEK_REDIRECT_LOGS,
-    UPDATE_DEVICE_IN_REDIRECT_LOGS
-}
+    UPDATE_DEVICE_IN_REDIRECT_LOGS,
+};

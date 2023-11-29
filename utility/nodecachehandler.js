@@ -1,6 +1,6 @@
-const NodeCache = require("node-cache");
+const NodeCache = require('node-cache');
 const myCache = new NodeCache();
-let nodecachehandler = () => ({})
+let nodecachehandler = () => ({});
 
 nodecachehandler.set = (key, value, ttl) => {
     const success = myCache.set(key, value, ttl);
@@ -11,8 +11,7 @@ nodecachehandler.get = (key) => {
     const value = myCache.get(key);
     if (value) {
         return value;
-    }
-    else return "";
+    } else return '';
 };
 
 nodecachehandler.delKey = (key) => {
@@ -24,7 +23,7 @@ nodecachehandler.flushAll = (key) => {
     const value = myCache.flushAll();
     return value;
 };
-nodecachehandler.set("RedirectLogsArray", []);
+nodecachehandler.set('RedirectLogsArray', []);
 module.exports = {
     nodecachehandler,
-}
+};

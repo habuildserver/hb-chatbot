@@ -1,7 +1,9 @@
 const mysql = require('mysql2');
-const HBLogger = require(process.cwd() + '/utility/logger').logger
+const HBLogger = require(process.cwd() + '/utility/logger').logger;
 
-const connection = mysql.createConnection(process.env.HB_ATTENDANCE_DATABASE_URL);
+const connection = mysql.createConnection(
+    process.env.HB_ATTENDANCE_DATABASE_URL
+);
 connection.connect();
 
 exports.executeQuery = async (query, params = []) => {

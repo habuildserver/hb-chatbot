@@ -1,5 +1,5 @@
-const { commonFunctions } = require(process.cwd() + '/utility/commonfunctions')
-const HBLogger = require(process.cwd() + '/utility/logger').logger
+const { commonFunctions } = require(process.cwd() + '/utility/commonfunctions');
+const HBLogger = require(process.cwd() + '/utility/logger').logger;
 
 module.exports = () => {
     return (err, req, res, next) => {
@@ -14,10 +14,12 @@ module.exports = () => {
                     stacktrace: err.stack,
                 },
             })}`
-        )
-        let resultStatus = 'Something went wrong.'
+        );
+        let resultStatus = 'Something went wrong.';
         return res
             .status(500)
-            .send(commonFunctions.createResponse({}, { message: resultStatus }))
-    }
-}
+            .send(
+                commonFunctions.createResponse({}, { message: resultStatus })
+            );
+    };
+};

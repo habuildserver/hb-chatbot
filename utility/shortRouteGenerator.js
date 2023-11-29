@@ -1,11 +1,8 @@
-
-const HBLogger = require(process.cwd() + '/utility/logger').logger
-const { commonFunctions } = require(process.cwd() + '/utility/commonfunctions')
+const HBLogger = require(process.cwd() + '/utility/logger').logger;
+const { commonFunctions } = require(process.cwd() + '/utility/commonfunctions');
 const { memberDa } = require(process.cwd() + '/member/memberda');
-const {
-    GET_SHORT_ROUTE_BY_ROUTE,
-
-} = require(process.cwd() + '/dataaccess/query');
+const { GET_SHORT_ROUTE_BY_ROUTE } = require(process.cwd() +
+    '/dataaccess/query');
 
 const getShortLinkDetails = async (memberData) => {
     HBLogger.info(`getShortLinkDetails called in`);
@@ -81,7 +78,6 @@ const generateShortrouteByMemberId = async (memberData) => {
     }
 };
 
-
 const shortRouteBackupGenerator = async (memberNameSlug) => {
     try {
         HBLogger.info(
@@ -89,10 +85,10 @@ const shortRouteBackupGenerator = async (memberNameSlug) => {
         );
 
         const possibleShortRoute = memberNameSlug + new Date().getTime();
-        let result = await memberDa.processQueryWithFilters(GET_SHORT_ROUTE_BY_ROUTE, [
-            `%${possibleShortRoute}%`,
-            `%${possibleShortRoute.toLowerCase()}%`,
-        ]);
+        let result = await memberDa.processQueryWithFilters(
+            GET_SHORT_ROUTE_BY_ROUTE,
+            [`%${possibleShortRoute}%`, `%${possibleShortRoute.toLowerCase()}%`]
+        );
         result = result?.rows[0];
 
         if (result)
@@ -118,7 +114,6 @@ const twoDigitRandStr = () => {
     return String(randNumber);
 };
 
-
 module.exports = {
-    getShortLinkDetails
-}
+    getShortLinkDetails,
+};

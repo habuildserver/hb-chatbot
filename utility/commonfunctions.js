@@ -1,21 +1,21 @@
 const HBLogger = require(process.cwd() + '/utility/logger').logger;
 const fetch = require('node-fetch');
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 //// On error goes to error middleware.
 const requestWatch = (fn) => {
     return (req, res, next) => {
-        fn(req, res, next).catch(next)
-    }
-}
+        fn(req, res, next).catch(next);
+    };
+};
 
-const commonFunctions = {}
+const commonFunctions = {};
 
 commonFunctions.createResponse = (success = {}, error = {}) => {
-    let result = {}
-    result.success = success
-    result.error = error
-    return result
-}
+    let result = {};
+    result.success = success;
+    result.error = error;
+    return result;
+};
 
 commonFunctions.inputParamRequired = (inputObj, checkParams) => {
     // const reqErrMsg=[];
@@ -27,7 +27,7 @@ commonFunctions.inputParamRequired = (inputObj, checkParams) => {
                 inputObj[p] !== null &&
                 trimHelper(inputObj[p]) !== ''
             )
-    )
+    );
 
     // if(missingProp && missingProp.length>0)
     // {
@@ -35,8 +35,8 @@ commonFunctions.inputParamRequired = (inputObj, checkParams) => {
     //         reqErrMsg.push(`${element} is required.`);
     //     });
     // }
-    return missingProps
-}
+    return missingProps;
+};
 
 /* ------------------------- Date utility functions ------------------------- */
 /**
@@ -50,11 +50,11 @@ commonFunctions.inputParamRequired = (inputObj, checkParams) => {
  * @returns monday
  */
 commonFunctions.getMondayOfCurrentWeek = () => {
-    const today = new Date()
-    const currentWeekMondayDate = today.getDate() - today.getDay() + 1
-    const monday = new Date(today.setDate(currentWeekMondayDate))
-    return monday
-}
+    const today = new Date();
+    const currentWeekMondayDate = today.getDate() - today.getDay() + 1;
+    const monday = new Date(today.setDate(currentWeekMondayDate));
+    return monday;
+};
 
 /**
  * assume ->
@@ -66,18 +66,21 @@ commonFunctions.getMondayOfCurrentWeek = () => {
  * @returns newDateObj
  */
 commonFunctions.subtractDaysFromDate = (currentDate, subDays = 0) => {
-    const currentDateObj = new Date(currentDate)
+    const currentDateObj = new Date(currentDate);
     const newDateObj = new Date(
         currentDateObj.setDate(currentDateObj.getDate() - Number(subDays))
-    )
-    return newDateObj
-}
+    );
+    return newDateObj;
+};
 
-const trimHelper = (input) => (typeof input === 'string' ? input.trim() : input)
+const trimHelper = (input) =>
+    typeof input === 'string' ? input.trim() : input;
 
 commonFunctions.registerUserOnZoomMeeting = async (input) => {
     try {
-        HBLogger.info("registerUserOnZoomMeeting input" + JSON.stringify(input));
+        HBLogger.info(
+            'registerUserOnZoomMeeting input' + JSON.stringify(input)
+        );
         const name = input?.name.trim();
         const token = jwt.sign(
             {
@@ -86,27 +89,25 @@ commonFunctions.registerUserOnZoomMeeting = async (input) => {
             },
             process.env.ZOOM_API_SECRET
         );
-        let lastName = "Habuilder";
-        let firstName = name.split(" ")[0];
-        if (name.split(" ").length > 1)
-            lastName = name.split(" ").slice(-1).join(" ");
+        let lastName = 'Habuilder';
+        let firstName = name.split(' ')[0];
+        if (name.split(' ').length > 1)
+            lastName = name.split(' ').slice(-1).join(' ');
 
-        let zoom_link_generated = "";
+        let zoom_link_generated = '';
 
         let zoomResult = await fetch(
             `https://api.zoom.us/v2/meetings/${input?.meetingId}/registrants/status`,
             {
-                method: "PUT",
+                method: 'PUT',
                 headers: {
-                    "content-type": "application/json",
+                    'content-type': 'application/json',
                     authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(
-                    {
-                        action: "approve",
-                        registrants: [{ email: String(input?.email).trim() }],
-                    },
-                )
+                body: JSON.stringify({
+                    action: 'approve',
+                    registrants: [{ email: String(input?.email).trim() }],
+                }),
             }
         );
         HBLogger.info(`Zoom result: ${JSON.stringify(zoomResult?.status)}`);
@@ -116,9 +117,9 @@ commonFunctions.registerUserOnZoomMeeting = async (input) => {
             const approveZoomResult = await fetch(
                 `https://api.zoom.us/v2/meetings/${input?.meetingId}/registrants`,
                 {
-                    method: "POST",
+                    method: 'POST',
                     headers: {
-                        "content-type": "application/json",
+                        'content-type': 'application/json',
                         authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
@@ -130,14 +131,18 @@ commonFunctions.registerUserOnZoomMeeting = async (input) => {
                 }
             );
             if (!approveZoomResult || approveZoomResult?.status != 204)
-                throw new Error(`enable to change registration status | ERROR:${JSON.stringify(approveZoomResult.status)}`);
+                throw new Error(
+                    `enable to change registration status | ERROR:${JSON.stringify(
+                        approveZoomResult.status
+                    )}`
+                );
 
             let innerZoomResult = await fetch(
                 `https://api.zoom.us/v2/meetings/${input?.meetingId}/registrants`,
                 {
-                    method: "POST",
+                    method: 'POST',
                     headers: {
-                        "content-type": "application/json",
+                        'content-type': 'application/json',
                         authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
@@ -150,11 +155,16 @@ commonFunctions.registerUserOnZoomMeeting = async (input) => {
             );
             zoom_link_generated = innerZoomResult?.join_url;
         }
-        HBLogger.info(`zoom result join url: ${JSON.stringify(zoom_link_generated)}`);
+        HBLogger.info(
+            `zoom result join url: ${JSON.stringify(zoom_link_generated)}`
+        );
         return zoom_link_generated;
-
     } catch (err) {
-        HBLogger.error(`registerUserOnZoomMeeting zoomService ERROR: ${JSON.stringify((err.message) ? err.message : err)}`);
+        HBLogger.error(
+            `registerUserOnZoomMeeting zoomService ERROR: ${JSON.stringify(
+                err.message ? err.message : err
+            )}`
+        );
         throw err;
     }
 };
@@ -163,11 +173,11 @@ commonFunctions.get_env = async (key) => {
     if (process.env.NODE_ENV == 'production') {
         return null;
     }
-}
+};
 
 commonFunctions.registerUserOnYouTube = async (shortRoute) =>
     `${process.env.PROXY_URL}${shortRoute}`;
 module.exports = {
     requestWatch,
     commonFunctions,
-}
+};

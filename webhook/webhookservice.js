@@ -1,4 +1,4 @@
-const webhookBusiness = require(process.cwd() + '/webhook/webhookbusiness')
+const webhookBusiness = require(process.cwd() + '/webhook/webhookbusiness');
 
 let webHookRoutes = [
     {
@@ -6,8 +6,8 @@ let webHookRoutes = [
         path: '/chat/:watiserverid?',
         controller: webhookBusiness.chatWebhook,
     },
-]
+];
 
 module.exports = {
     webHookRoutes,
-}
+};

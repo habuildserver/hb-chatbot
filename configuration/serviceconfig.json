@@ -18,8 +18,9 @@
         "dobFormat": "YYYY-MM-DD",
         "dateOfServiceFormat": "YYYY-MM-DD HH:mm:ss"
     },
-    "cachekeys":{
-        "YTShortLinkKey": "YTShortLinkKey"
+    "cachekeys": {
+        "MASTERAIPROVIDER": "MASTERAIPROVIDER",
+        "WATISERVER": "WATISERVER"
     },
     "invoice_description": {
         "1": "Yoga Everyday",

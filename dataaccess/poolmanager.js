@@ -1,10 +1,10 @@
-const { Pool } = require('pg')
- const pools = new Map();
-const HBLogger = require(process.cwd() + '/utility/logger').logger
+const { Pool } = require('pg');
+const pools = new Map();
+const HBLogger = require(process.cwd() + '/utility/logger').logger;
 
 const set = ({ name, config }) => {
     if (!name || !config) {
-        HBLogger.error("Pool-Manager: Missing configuration details");
+        HBLogger.error('Pool-Manager: Missing configuration details');
         throw new Error(`Missing configuration details`);
     }
 
@@ -17,7 +17,7 @@ const set = ({ name, config }) => {
     pools.set(name, pool);
 };
 
-const get = options => {
+const get = (options) => {
     if (!pools.has(options.name)) {
         HBLogger.info(`Creating new pool for ${options.name}`);
         set(options);
@@ -25,7 +25,7 @@ const get = options => {
     return pools.get(options.name);
 };
 
-const close = async name => {
+const close = async (name) => {
     const pool = pools.get(name);
     if (!pool) {
         HBLogger.error(`Pool-Manager: Pool ${name} does not exist`);
@@ -35,7 +35,7 @@ const close = async name => {
 };
 
 const closeAll = async () => {
-    const promises = Array.from(pools.values()).map(pool => pool.end());
+    const promises = Array.from(pools.values()).map((pool) => pool.end());
     await Promise.all(promises);
 };
 

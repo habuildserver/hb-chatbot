@@ -1,7 +1,5 @@
 const cron = require('node-cron');
-const {
-    logAttendanceInDB
-} = require('../utility/schedulerhelper');
+const { logAttendanceInDB } = require('../utility/schedulerhelper');
 const HBLogger = require(process.cwd() + '/utility/logger').logger;
 
 //run every 10 min
@@ -25,5 +23,5 @@ const logAttendance = cron.schedule(
         scheduled: false,
     }
 );
- 
-logAttendance.start(); 
+
+logAttendance.start();

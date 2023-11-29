@@ -25,11 +25,8 @@
         }
     ],
 
-    "requiresCompatibilities": [
-        "EXTERNAL",
-        "EC2"
-    ],
-    
+    "requiresCompatibilities": ["EXTERNAL", "EC2"],
+
     "cpu": "3000",
     "memory": "3000",
     "family": "hbchatbot"

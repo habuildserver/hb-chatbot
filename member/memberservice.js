@@ -1,17 +1,17 @@
-const { memberBusiness } = require(process.cwd() + '/member/memberbusiness')
+const { memberBusiness } = require(process.cwd() + '/member/memberbusiness');
 const { authenticationBusiness } = require(process.cwd() +
-    '/utility/userauthentication')
+    '/utility/userauthentication');
 
 let memberRoutes = [
     {
         type: 'get',
         path: '/y/:shortroute?',
-        controller: memberBusiness.redirectToYogaClass
+        controller: memberBusiness.redirectToYogaClass,
     },
     {
         type: 'get',
         path: '/test',
-        controller: memberBusiness.redirectToTest
+        controller: memberBusiness.redirectToTest,
     },
     {
         type: 'get',
@@ -26,15 +26,15 @@ let memberRoutes = [
     {
         type: 'get',
         path: '/d/:shortroute?',
-        controller: memberBusiness.redirectToDanceStretchClass
+        controller: memberBusiness.redirectToDanceStretchClass,
     },
     {
         type: 'get',
         path: '/calculatedevice',
-        controller: memberBusiness.calculateDevice
-    }
-]
+        controller: memberBusiness.calculateDevice,
+    },
+];
 
 module.exports = {
     memberRoutes,
-}
+};
