@@ -5,40 +5,45 @@ const commonFunctions = require(process.cwd() + '/utility/commonfunctions');
 const { redishandler } = require(process.cwd() + '/utility/redishandler');
 const serviceconfig = require(process.cwd() + '/configuration/serviceconfig');
 const { getAIResponse } = require(process.cwd() + '/utility/aiservice');
+const { sendWhatsappMessage } = require(process.cwd() + '/utility/watihelper');
 
 let webhookBusiness = () => ({});
 
 webhookBusiness.chatWebhook = async (req, res, next) => {
     try {
         // 1. Get the query from the request
-        const watiserverid = req.query.watiserverid;
+        const { watiserverid } = req.params;
         const { waId, text, senderName } = req.body;
 
         // 2. Get AI providers from redis
-        const apiProvidersList = await redishandler.getAIProviders(
+        let apiProvidersList = await redishandler.get(
             serviceconfig.cachekeys.MASTERAIPROVIDER
         );
-        const provider = apiProvidersList.rows.reduce((acc, cur) => {
+
+        apiProvidersList = apiProvidersList ? JSON.parse(apiProvidersList) : [];
+
+        const provider = apiProvidersList.reduce((acc, cur) => {
             return acc.requestcnt < cur.requestcnt ? cur : acc;
-        }, {});
+        });
 
         // 3. Call AI provider
         const response = await getAIResponse(text, provider);
 
         // 4. Send the response to the user
         if (response) {
-            const watiAccountDetails = await redishandler.getWatiAccountDetails(
+            let watiAccountDetails = await redishandler.get(
                 serviceconfig.cachekeys.WATISERVER
             );
-            const watiaccount = watiAccountDetails.rows.find(
-                (row) => row.id === watiserverid
+            watiAccountDetails = watiAccountDetails ? JSON.parse(watiAccountDetails) : [];
+            const watiaccount = watiAccountDetails.find(
+                (row) => row.watiserverid == watiserverid
             );
             sendWhatsappMessage(
                 senderName,
                 waId,
                 watiaccount.endpoint,
                 watiaccount.token,
-                response
+                response.result
             );
         }
 

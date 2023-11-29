@@ -7,7 +7,8 @@ const getAIRequestOption = (query, optionObj) => {
         method: 'POST',
         url: endpoint,
         headers: {
-            authorization: token,
+            authorization: `Bearer ${token}`,
+            "Content-Type": 'application/json'
         },
         data: {
             query,

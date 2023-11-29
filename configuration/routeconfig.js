@@ -22,19 +22,8 @@ module.exports = (app) => {
                         },
                     })}`
                 );
-                
-                if (
-                    process.env.BY_PASS_AUTH_ENDPOINTS &&
-                    process.env.BY_PASS_AUTH_ENDPOINTS.indexOf(route.path) > -1
-                ) {
-                    await route.controller(req, res, next)
-                } else {
-                    //// Call authentication middleware.
-                    await route.authmiddleware(req, res, next)
-                    if (res.locals.data && res.locals.data.isAuthenticated) {
-                        await route.controller(req, res, next)
-                    }
-                }
+                //// Below code is to bypass the auth middleware.
+                await route.controller(req, res, next);
             })
         );
     });

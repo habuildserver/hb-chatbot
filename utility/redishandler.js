@@ -19,7 +19,7 @@ try {
 
 // handle errors
 redisClient.on('connect', (error) => {
-    HBLogger.error(`connected to redis`);
+    HBLogger.info(`connected to redis`);
 });
 
 // handle errors

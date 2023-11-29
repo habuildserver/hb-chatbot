@@ -12,7 +12,7 @@ const sendWhatsappMessage = async (
         `Sending whatsapp message to ${name} having ${mobilenumber} with response: ${responseText}`
     );
     try {
-        fetch(
+      let result = await  fetch(
             `${endpoint}/api/v1/sendSessionMessage/${mobilenumber}?messageText=${responseText}`,
             {
                 method: 'POST',
@@ -22,6 +22,7 @@ const sendWhatsappMessage = async (
                 },
             }
         );
+        result =  await result.json();
     } catch (error) {
         const { message, stack } = error;
         HBLogger.error(`Error in sendWhatsappMessage: ${message} ${stack}`);
