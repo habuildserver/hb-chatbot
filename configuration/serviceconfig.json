@@ -1,0 +1,28 @@
+{
+    "success": {
+        "RECORDS_FOUND": "Records found.",
+        "DATA_SAVE_SUCCESS": "Data saved successfully.",
+        "DATA_DELETED_MSG": "Data deleted successfully."
+    },
+    "error": {
+        "COMMON_API_ERROR": "Something went wrong.",
+        "NO_RECORDS_FOUND": "No records found.",
+        "DATA_SAVE_ISSUE": "Data creation failed.",
+        "DATA_DELETE_ISSUE_MSG": "Data deletion failed."
+    },
+    "logfile": {
+        "NAME": "hbchatbot.log",
+        "SIZE": 10485760
+    },
+    "defaultValue": {
+        "dobFormat": "YYYY-MM-DD",
+        "dateOfServiceFormat": "YYYY-MM-DD HH:mm:ss"
+    },
+    "cachekeys":{
+        "YTShortLinkKey": "YTShortLinkKey"
+    },
+    "invoice_description": {
+        "1": "Yoga Everyday",
+        "2": "Face Tone"
+    }
+}

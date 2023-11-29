@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+    pre_build:
+        commands:
+            - echo Building the Docker image...
+            - docker build -t $REPOSITORY_URI:latest .
+
+    post_build:
+        commands:
+            - echo docker login
+            - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 963127282571.dkr.ecr.ap-south-1.amazonaws.com
+
+            - echo Pushing the Docker image...
+            - docker push $REPOSITORY_URI:$TAG
+
+            - echo register new task def
+            - aws ecs register-task-definition --cli-input-json file://./task-def.json
+
+            - echo update ecs service with new task def
+            - aws ecs update-service --service hbmemberclassjoin --task-definition hbchatbot --cluster memberclassjoin-ec2-cluster
+
+artifacts:
+    files:
+        - task-def.json

@@ -1,0 +1,36 @@
+{
+    "executionRoleArn": "arn:aws:iam::963127282571:role/task-execution-role",
+    "containerDefinitions": [
+        {
+            "name": "hbchatbot",
+            "image": "963127282571.dkr.ecr.ap-south-1.amazonaws.com/hbchatbot",
+            "essential": true,
+            "portMappings": [
+                {
+                    "hostPort": 3006,
+                    "protocol": "tcp",
+                    "containerPort": 3006
+                }
+            ],
+
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "hbchatbot",
+                    "awslogs-region": "ap-south-1",
+                    "awslogs-create-group": "true",
+                    "awslogs-stream-prefix": "habuild-memberclassjoin-api"
+                }
+            }
+        }
+    ],
+
+    "requiresCompatibilities": [
+        "EXTERNAL",
+        "EC2"
+    ],
+    
+    "cpu": "3000",
+    "memory": "3000",
+    "family": "hbchatbot"
+}
