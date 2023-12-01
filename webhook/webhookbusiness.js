@@ -1,7 +1,7 @@
 const moment = require('moment');
 const fetch = require('node-fetch');
 const HBLogger = require(process.cwd() + '/utility/logger').logger;
-const commonFunctions = require(process.cwd() + '/utility/commonfunctions');
+const { commonFunctions } = require(process.cwd() + '/utility/commonfunctions');
 const { redishandler } = require(process.cwd() + '/utility/redishandler');
 const serviceconfig = require(process.cwd() + '/configuration/serviceconfig');
 const { getAIResponse } = require(process.cwd() + '/utility/aiservice');
