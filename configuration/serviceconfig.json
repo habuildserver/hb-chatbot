@@ -16,6 +16,7 @@
     },
     "cachekeys": {
         "MASTERAIPROVIDER": "MASTERAIPROVIDER",
-        "WATISERVER": "WATISERVER"
+        "WATISERVER": "WATISERVER",
+        "RESTRICTED_KEYWORDS": "RESTRICTED_KEYWORDS"
     }
 }
