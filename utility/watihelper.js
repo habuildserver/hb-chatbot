@@ -6,10 +6,11 @@ const sendWhatsappMessage = async (
     mobilenumber,
     endpoint,
     token,
-    responseText
+    responseText,
+    text
 ) => {
     HBLogger.info(
-        `Sending whatsapp message to ${name} having ${mobilenumber} with response: ${responseText}`
+        `Sending whatsapp message to ${name} having ${mobilenumber} with response: ${responseText} against: ${text}`
     );
     try {
         fetch(
@@ -21,7 +22,7 @@ const sendWhatsappMessage = async (
                     Authorization: `Bearer ${token}`,
                 },
             }
-        );         
+        );
     } catch (error) {
         const { message, stack } = error;
         HBLogger.error(`Error in sendWhatsappMessage: ${message} ${stack}`);
