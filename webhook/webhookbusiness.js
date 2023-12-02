@@ -16,6 +16,18 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         const { watiserverid } = req.params;
         const { id, senderName, created, whatsappMessageId, conversationId, text, waId, eventType } = req.body;
 
+        let restrictedKeywordList = await redishandler.LRANGE(
+            serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
+            0,
+            -1
+        );
+
+        restrictedKeywordList.map((restrictedKeyword) => {
+            if (text.includes(restrictedKeyword)) {
+                throw new Error('Restricted keyword');
+            }
+        });
+
         // 2. Get AI providers from redis
         let apiProvidersList = await redishandler.get(
             serviceconfig.cachekeys.MASTERAIPROVIDER
@@ -30,21 +42,26 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         // 3. Call AI provider
         const response = await getAIResponse(text, provider);
 
+        const answer = response.result || '';
+
         // 4. Send the response to the user
-        if (response) {
+        if (response && !["I'm sorry, I don't know."].includes(answer)) {
             let watiAccountDetails = await redishandler.get(
                 serviceconfig.cachekeys.WATISERVER
             );
-            watiAccountDetails = watiAccountDetails ? JSON.parse(watiAccountDetails) : [];
+            watiAccountDetails = watiAccountDetails
+                ? JSON.parse(watiAccountDetails)
+                : [];
             const watiaccount = watiAccountDetails.find(
                 (row) => row.watiserverid == watiserverid
             );
-            sendWhatsappMessage(
+            await sendWhatsappMessage(
                 senderName,
                 waId,
                 watiaccount.endpoint,
                 watiaccount.token,
-                response.result
+                response.result,
+                text
             );
         }
 
