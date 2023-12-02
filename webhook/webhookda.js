@@ -13,9 +13,9 @@ webhookDa.addChatDetails = async (chatDetail) => {
     HBLogger.info(`in addChatDetails call start`);
     let queryResult = await processQueryWithFilters(
         INSERT_CHAT_DETAIL,
-        [chatDetail?.id, chatDetail?.mobilenumber, chatDetail?.name, chatDetail?.chatrequesttimestamp,
+        [chatDetail?.id, chatDetail?.name, chatDetail?.chatrequesttimestamp,
             chatDetail?.whatsappmessageid, chatDetail?.waticonversationid, chatDetail?.question, chatDetail?.answer,
-            chatDetail?.responder, chatDetail?.waid, chatDetail?.eventtype, chatDetail?.watiserverid, chatDetail?.inactive]
+            chatDetail?.waid, chatDetail?.eventtype, chatDetail?.watiserverid]
     );
     HBLogger.info(
         `managementDa.addChatDetails call end queryResult ${JSON.stringify(queryResult?.rows)} `

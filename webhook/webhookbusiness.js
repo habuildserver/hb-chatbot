@@ -70,7 +70,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         const chatDetails = {
             id,
             name: senderName,
-            chatrequesttimestamp: created,
+            chatrequesttimestamp: new Date(created),
             whatsappmessageid: whatsappMessageId,
             waticonversationid: conversationId,
             question: text,
