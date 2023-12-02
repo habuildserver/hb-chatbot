@@ -15,6 +15,16 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         const { watiserverid } = req.params;
         const { waId, text, senderName } = req.body;
 
+        let restrictedKeywordList = await redishandler.LRANGE(
+            serviceconfig.cachekeys.RESTRICTED_KEYWORDS, 0, -1
+        );
+
+        restrictedKeywordList.map((restrictedKeyword) => {
+            if (text.includes(restrictedKeyword)) {
+                throw new Error("Restricted keyword");
+            }
+        })
+
         // 2. Get AI providers from redis
         let apiProvidersList = await redishandler.get(
             serviceconfig.cachekeys.MASTERAIPROVIDER
