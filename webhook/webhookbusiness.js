@@ -16,7 +16,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         const { waId, text, senderName } = req.body;
 
         let restrictedKeywordList = await redishandler.LRANGE(
-            serviceconfig.cachekeys.RESTRICTED_KEYWORDS, 0, 10000
+            serviceconfig.cachekeys.RESTRICTED_KEYWORDS, 0, -1
         );
 
         restrictedKeywordList.map((restrictedKeyword) => {
