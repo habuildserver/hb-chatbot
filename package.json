@@ -27,7 +27,6 @@
     "express-useragent": "^1.0.15",
     "geoip-lite": "^1.4.6",
     "jsonwebtoken": "^9.0.0",
-    "kafkajs": "^2.2.4",
     "moment": "^2.29.4",
     "mysql2": "^3.5.2",
     "node-cache": "^5.1.2",
