@@ -14,7 +14,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         // 1. Get the query from the request
         const { watiserverid } = req.params;
         const { waId, text, senderName } = req.body;
-
+        HBLogger.info(`webhookBusiness.chatWebhook call in with input: ${JSON.stringify(req.body)}`);
         let restrictedKeywordList = await redishandler.LRANGE(
             serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
             0,
