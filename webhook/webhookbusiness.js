@@ -28,14 +28,14 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         });
 
         // 2. Get AI providers from redis
-        let apiProvidersList = await redishandler.get(
-            serviceconfig.cachekeys.MASTERAIPROVIDER
+        let apiProvidersList = await redishandler.LRANGE(
+            serviceconfig.cachekeys.MASTERAIPROVIDER, 0 ,- 1
         );
 
-        apiProvidersList = apiProvidersList ? JSON.parse(apiProvidersList) : [];
+        apiProvidersList = apiProvidersList ? apiProvidersList : [];
 
         const provider = apiProvidersList.reduce((acc, cur) => {
-            return acc.requestcnt < cur.requestcnt ? cur : acc;
+            return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt ? JSON.parse(cur) : JSON.parse(acc);
         });
 
         // 3. Call AI provider
@@ -45,15 +45,16 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
 
         // 4. Send the response to the user
         if (response && !["I'm sorry, I don't know."].includes(answer)) {
-            let watiAccountDetails = await redishandler.get(
-                serviceconfig.cachekeys.WATISERVER
+            let watiAccountDetails = await redishandler.LRANGE(
+                serviceconfig.cachekeys.WATISERVER, 0, -1
             );
             watiAccountDetails = watiAccountDetails
-                ? JSON.parse(watiAccountDetails)
+                ? watiAccountDetails
                 : [];
-            const watiaccount = watiAccountDetails.find(
-                (row) => row.watiserverid == watiserverid
+            let watiaccount = watiAccountDetails.find(
+                (row) => JSON.parse(row).watiserverid == watiserverid
             );
+            watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
             await sendWhatsappMessage(
                 senderName,
                 waId,
