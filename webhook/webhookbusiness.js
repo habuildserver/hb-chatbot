@@ -6,6 +6,7 @@ const { redishandler } = require(process.cwd() + '/utility/redishandler');
 const serviceconfig = require(process.cwd() + '/configuration/serviceconfig');
 const { getAIResponse } = require(process.cwd() + '/utility/aiservice');
 const { sendWhatsappMessage } = require(process.cwd() + '/utility/watihelper');
+const { pushToQueue } = require(process.cwd() + '/queue/producer');
 
 let webhookBusiness = () => ({});
 
@@ -13,7 +14,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
     try {
         // 1. Get the query from the request
         const { watiserverid } = req.params;
-        const { waId, text, senderName } = req.body;
+        const { id, senderName, created, whatsappMessageId, conversationId, text, waId, eventType } = req.body;
 
         let restrictedKeywordList = await redishandler.LRANGE(
             serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
@@ -66,6 +67,22 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         }
 
         //5 . Save the conversation in the Redis cache
+
+        const chatDetails = {
+            id,
+            name: senderName,
+            chatrequesttimestamp: new Date(created),
+            whatsappmessageid: whatsappMessageId,
+            waticonversationid: conversationId,
+            question: text,
+            answer: response.result,
+            waid: waId,
+            eventtype: eventType,
+            watiserverid
+        };
+
+        await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
+
     } catch (error) {
         const { message, stack } = error;
         HBLogger.error(
