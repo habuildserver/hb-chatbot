@@ -12,60 +12,72 @@ let webhookBusiness = () => ({});
 webhookBusiness.chatWebhook = async (req, res, next) => {
     try {
         // 1. Get the query from the request
+
         const { watiserverid } = req.params;
-        const { waId, text, senderName } = req.body;
+        const { waId, text, senderName, created } = req.body;
         HBLogger.info(`webhookBusiness.chatWebhook call in with input: ${JSON.stringify(req.body)}`);
-        let restrictedKeywordList = await redishandler.LRANGE(
-            serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
-            0,
-            -1
-        );
 
-        restrictedKeywordList.map((restrictedKeyword) => {
-            if (text.includes(restrictedKeyword)) {
-                throw new Error('Restricted keyword');
+        let currentDate = new Date();
+        // Subtract 5 seconds (5 * 1000 milliseconds) from the current date
+        let newDate = new Date(currentDate.getTime() - 5000);
+        let webhookRequestDate = new Date(created);
+        if (webhookRequestDate > newDate) {
+
+            let restrictedKeywordList = await redishandler.LRANGE(
+                serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
+                0,
+                -1
+            );
+
+            restrictedKeywordList.map((restrictedKeyword) => {
+                if (text.includes(restrictedKeyword)) {
+                    throw new Error('Restricted keyword');
+                }
+            });
+
+            // 2. Get AI providers from redis
+            let apiProvidersList = await redishandler.LRANGE(
+                serviceconfig.cachekeys.MASTERAIPROVIDER, 0, - 1
+            );
+
+            apiProvidersList = apiProvidersList ? apiProvidersList : [];
+
+            const provider = apiProvidersList.reduce((acc, cur) => {
+                return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt ? JSON.parse(cur) : JSON.parse(acc);
+            });
+
+            // 3. Call AI provider
+            const response = await getAIResponse(text, provider);
+
+            const answer = response.result || '';
+
+            // 4. Send the response to the user
+            if (response && !["I'm sorry, I don't know."].includes(answer)) {
+                let watiAccountDetails = await redishandler.LRANGE(
+                    serviceconfig.cachekeys.WATISERVER, 0, -1
+                );
+                watiAccountDetails = watiAccountDetails
+                    ? watiAccountDetails
+                    : [];
+                let watiaccount = watiAccountDetails.find(
+                    (row) => JSON.parse(row).watiserverid == watiserverid
+                );
+                watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
+                await sendWhatsappMessage(
+                    senderName,
+                    waId,
+                    watiaccount.endpoint,
+                    watiaccount.token,
+                    response.result,
+                    text
+                );
             }
-        });
 
-        // 2. Get AI providers from redis
-        let apiProvidersList = await redishandler.LRANGE(
-            serviceconfig.cachekeys.MASTERAIPROVIDER, 0 ,- 1
-        );
-
-        apiProvidersList = apiProvidersList ? apiProvidersList : [];
-
-        const provider = apiProvidersList.reduce((acc, cur) => {
-            return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt ? JSON.parse(cur) : JSON.parse(acc);
-        });
-
-        // 3. Call AI provider
-        const response = await getAIResponse(text, provider);
-
-        const answer = response.result || '';
-
-        // 4. Send the response to the user
-        if (response && !["I'm sorry, I don't know."].includes(answer)) {
-            let watiAccountDetails = await redishandler.LRANGE(
-                serviceconfig.cachekeys.WATISERVER, 0, -1
-            );
-            watiAccountDetails = watiAccountDetails
-                ? watiAccountDetails
-                : [];
-            let watiaccount = watiAccountDetails.find(
-                (row) => JSON.parse(row).watiserverid == watiserverid
-            );
-            watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
-            await sendWhatsappMessage(
-                senderName,
-                waId,
-                watiaccount.endpoint,
-                watiaccount.token,
-                response.result,
-                text
-            );
+            //5 . Save the conversation in the Redis cache
         }
-
-        //5 . Save the conversation in the Redis cache
+        else {
+            HBLogger.info(`webhookBusiness.chatWebhook old webhook triggers call for waId: ${waId}`);
+        }
     } catch (error) {
         const { message, stack } = error;
         HBLogger.error(
