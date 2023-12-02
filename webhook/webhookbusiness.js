@@ -6,6 +6,7 @@ const { redishandler } = require(process.cwd() + '/utility/redishandler');
 const serviceconfig = require(process.cwd() + '/configuration/serviceconfig');
 const { getAIResponse } = require(process.cwd() + '/utility/aiservice');
 const { sendWhatsappMessage } = require(process.cwd() + '/utility/watihelper');
+const { pushToQueue } = require(process.cwd() + '/queue/producer');
 
 let webhookBusiness = () => ({});
 
@@ -48,6 +49,20 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         }
 
         //5 . Save the conversation in the Redis cache
+
+        const chatDetails = {
+            id: 1,
+            mobilenumber: 123456,
+            name: senderName,
+            question: text,
+            answer: response,
+            responder: provider,
+            waid: waId,
+            watiserverid
+        };
+
+        await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
+
     } catch (error) {
         const { message, stack } = error;
         HBLogger.error(
