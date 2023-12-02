@@ -14,7 +14,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
     try {
         // 1. Get the query from the request
         const { watiserverid } = req.params;
-        const { waId, text, senderName } = req.body;
+        const { id, senderName, created, whatsappMessageId, conversationId, text, waId, eventType } = req.body;
 
         // 2. Get AI providers from redis
         let apiProvidersList = await redishandler.get(
@@ -51,13 +51,15 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         //5 . Save the conversation in the Redis cache
 
         const chatDetails = {
-            id: 1,
-            mobilenumber: 123456,
+            id,
             name: senderName,
+            chatrequesttimestamp: created,
+            whatsappmessageid: whatsappMessageId,
+            waticonversationid: conversationId,
             question: text,
-            answer: response,
-            responder: provider,
+            answer: response.result,
             waid: waId,
+            eventtype: eventType,
             watiserverid
         };
 
