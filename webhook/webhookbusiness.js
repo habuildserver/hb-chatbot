@@ -106,7 +106,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 watiserverid,
             };
 
-            await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
+            // await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
         } else {
             HBLogger.info(
                 `webhookBusiness.chatWebhook old webhook triggers call for waId: ${waId}`
