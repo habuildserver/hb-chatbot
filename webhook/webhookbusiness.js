@@ -13,17 +13,28 @@ let webhookBusiness = () => ({});
 webhookBusiness.chatWebhook = async (req, res, next) => {
     try {
         // 1. Get the query from the request
-
         const { watiserverid } = req.params;
-        const { id, senderName, created, whatsappMessageId, conversationId, text, waId, eventType } = req.body;
-        HBLogger.info(`webhookBusiness.chatWebhook call in with input: ${JSON.stringify(req.body)}`);
+        const {
+            id,
+            senderName,
+            created,
+            whatsappMessageId,
+            conversationId,
+            text,
+            waId,
+            eventType,
+        } = req.body;
+        HBLogger.info(
+            `webhookBusiness.chatWebhook call in with input: ${JSON.stringify(
+                req.body
+            )}`
+        );
 
         let currentDate = new Date();
         // Subtract 5 seconds (5 * 1000 milliseconds) from the current date
         let newDate = new Date(currentDate.getTime() - 5000);
         let webhookRequestDate = new Date(created);
         if (webhookRequestDate > newDate) {
-
             let restrictedKeywordList = await redishandler.LRANGE(
                 serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
                 0,
@@ -38,13 +49,17 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
 
             // 2. Get AI providers from redis
             let apiProvidersList = await redishandler.LRANGE(
-                serviceconfig.cachekeys.MASTERAIPROVIDER, 0, - 1
+                serviceconfig.cachekeys.MASTERAIPROVIDER,
+                0,
+                -1
             );
 
             apiProvidersList = apiProvidersList ? apiProvidersList : [];
 
             const provider = apiProvidersList.reduce((acc, cur) => {
-                return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt ? JSON.parse(cur) : JSON.parse(acc);
+                return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt
+                    ? JSON.parse(cur)
+                    : JSON.parse(acc);
             });
 
             // 3. Call AI provider
@@ -55,7 +70,9 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             // 4. Send the response to the user
             if (response && !["I'm sorry, I don't know."].includes(answer)) {
                 let watiAccountDetails = await redishandler.LRANGE(
-                    serviceconfig.cachekeys.WATISERVER, 0, -1
+                    serviceconfig.cachekeys.WATISERVER,
+                    0,
+                    -1
                 );
                 watiAccountDetails = watiAccountDetails
                     ? watiAccountDetails
@@ -86,14 +103,14 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 answer: response.result,
                 waid: waId,
                 eventtype: eventType,
-                watiserverid
+                watiserverid,
             };
 
-            await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
-            }
-
-        else {
-            HBLogger.info(`webhookBusiness.chatWebhook old webhook triggers call for waId: ${waId}`);
+            // await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
+        } else {
+            HBLogger.info(
+                `webhookBusiness.chatWebhook old webhook triggers call for waId: ${waId}`
+            );
         }
     } catch (error) {
         const { message, stack } = error;
