@@ -27,6 +27,7 @@ webhookDa.addChatDetails = async (chatDetail) => {
 webhookDa.addChatDetailsInBulk = async (bulkChatDetail) => {
     HBLogger.info(`in addChatDetailsInBulk call start`);
     const bulkInsertQuery = INSERT_CHAT_DETAILS_IN_BULK(bulkChatDetail);
+    HBLogger.info(`bulk insert query ${bulkInsertQuery}`);
     let queryResult = await processQueryWithFilters(
         bulkInsertQuery
     );
