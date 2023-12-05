@@ -3,7 +3,7 @@ const HBLogger = require(process.cwd() + '/utility/logger').logger;
 
 const kafka = new Kafka({
     clientId: process.env.KAFKA_PRODUCER_CLIENT_ID,
-    brokers: [process.env.KAFKA_BROKER],
+    brokers: process.env.KAFKA_BROKER.split(','),
 })
 
 const pushToQueue = async (topic, message) => {
