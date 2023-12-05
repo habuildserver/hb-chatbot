@@ -4,7 +4,7 @@ const { webhookDa } = require(process.cwd() + '/webhook/webhookda');
 
 const kafka = new Kafka({
     clientId: process.env.KAFKA_CONSUMER_CLIENT_ID,
-    brokers: [process.env.KAFKA_BROKER],
+    brokers: process.env.KAFKA_BROKER.split(','),
 })
 
 const consumeFromQueue = async (consumerGroup, topic) => {
