@@ -16,18 +16,32 @@ const consumeFromQueue = async (consumerGroup, topic) => {
     HBLogger.info(`kafka consumer connected to ${consumerGroup} and topic ${topic}`)
 
     await consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
-            switch (topic) {
-                case process.env.KAFKA_SAVE_CHAT_TOPIC:
-                    await webhookDa.addChatDetails(JSON.parse(message.value));
-                    break;
-                case process.env.KAFKA_TEST_TOPIC:
-                    HBLogger.info(`message received on TEST TOPIC`);
-                    console.log(JSON.parse(message.value));
-                    break;
-                default:
-                    HBLogger.error(`unknown topic: `, topic)
-            }
+        eachBatchAutoResolve: true,
+        eachBatch: async ({
+                              batch,
+                              resolveOffset,
+                              heartbeat
+                          }) => {
+                            const messages = [];
+                            for (let message of batch.messages) {
+                                if (message && message.value) {
+                                    messages.push(JSON.parse(message.value))
+                                }
+                                resolveOffset(message.offset)
+                                await heartbeat()
+                            }
+
+                            switch (batch.topic) {
+                                case process.env.KAFKA_SAVE_CHAT_TOPIC:
+                                    await webhookDa.addChatDetailsInBulk(messages);
+                                    break;
+                                case process.env.KAFKA_TEST_TOPIC:
+                                    HBLogger.info(`message received on TEST TOPIC`);
+                                    console.log(messages);
+                                    break;
+                                default:
+                                    HBLogger.error(`unknown topic: `, topic)
+                            }
         },
     })
 }
