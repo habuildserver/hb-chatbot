@@ -71,8 +71,8 @@ app.use(errorHandler());
 
 const server = http.createServer(app);
 
-// consumeFromQueue(process.env.KAFKA_CONSUMER_GROUP, process.env.KAFKA_SAVE_CHAT_TOPIC);
-// consumeFromQueue(process.env.KAFKA_TEST_CONSUMER_GROUP, process.env.KAFKA_TEST_TOPIC);
+consumeFromQueue(process.env.KAFKA_CONSUMER_GROUP, process.env.KAFKA_SAVE_CHAT_TOPIC);
+consumeFromQueue(process.env.KAFKA_TEST_CONSUMER_GROUP, process.env.KAFKA_TEST_TOPIC);
 
 server.listen(parseInt(process.env.HABUILD_CHATBOT_PORT), function () {
     console.log(

@@ -1,10 +1,10 @@
 const { webHookRoutes } = require(process.cwd() + '/webhook/webhookservice');
-// const { queueRoutes } = require(process.cwd() + '/queue/queueroutes');
+const { queueRoutes } = require(process.cwd() + '/queue/queueroutes');
 const HBLogger = require(process.cwd() + '/utility/logger').logger;
 const { requestWatch } = require(process.cwd() + '/utility/commonfunctions');
 
 module.exports = (app) => {
-    let routes = [...webHookRoutes];
+    let routes = [...webHookRoutes, ...queueRoutes];
 
     routes.forEach((route) => {
         app[route.type](
