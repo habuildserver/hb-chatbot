@@ -63,7 +63,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             });
 
             // 3. Call AI provider
-            const response = await getAIResponse(text, provider);
+            const response = await getAIResponse(text, JSON.parse(provider));
 
             const answer = response.result || '';
 
