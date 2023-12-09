@@ -81,6 +81,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                     (row) => JSON.parse(row).watiserverid == watiserverid
                 );
                 watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
+                HBLogger.info('--------- wati account details ----------', watiaccount);
                 await sendWhatsappMessage(
                     senderName,
                     waId,
