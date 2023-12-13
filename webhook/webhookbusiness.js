@@ -35,6 +35,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         let newDate = new Date(currentDate.getTime() - 5000);
         let webhookRequestDate = new Date(created);
         if (webhookRequestDate > newDate) {
+
             let restrictedKeywordList = await redishandler.LRANGE(
                 serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
                 0,
@@ -47,28 +48,50 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 }
             });
 
-            // 2. Get AI providers from redis
-            let apiProvidersList = await redishandler.LRANGE(
-                serviceconfig.cachekeys.MASTERAIPROVIDER,
+            // Send auto responses for generic keywords
+
+            let answer = '';
+            let staticResponse = undefined;
+
+            let genericKeywordList = await redishandler.LRANGE(
+                serviceconfig.cachekeys.GENERIC_KEYWORDS,
                 0,
                 -1
             );
 
-            apiProvidersList = apiProvidersList ? apiProvidersList : [];
-
-            const provider = apiProvidersList.reduce((acc, cur) => {
-                return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt
-                    ? JSON.parse(cur)
-                    : JSON.parse(acc);
+            genericKeywordList.map((genericKeywordString) => {
+                const genericKeyword = JSON.parse(genericKeywordString);
+                if (text.length < genericKeyword.lengthToCheck && text.toLowerCase().includes(genericKeyword.question)) {
+                    staticResponse = genericKeyword.answer
+                }
             });
 
-            // 3. Call AI provider
-            const response = await getAIResponse(text, JSON.parse(provider));
+            if (staticResponse) {
+                answer = staticResponse;
+            } else {
+                // 2. Get AI providers from redis
+                let apiProvidersList = await redishandler.LRANGE(
+                    serviceconfig.cachekeys.MASTERAIPROVIDER,
+                    0,
+                    -1
+                );
 
-            const answer = response.result || '';
+                apiProvidersList = apiProvidersList ? apiProvidersList : [];
+
+                const provider = apiProvidersList.reduce((acc, cur) => {
+                    return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt
+                        ? JSON.parse(cur)
+                        : JSON.parse(acc);
+                });
+
+                // 3. Call AI provider
+                const response = await getAIResponse(text, JSON.parse(provider));
+
+                answer = response.result || '';
+            }
 
             // 4. Send the response to the user
-            if (response && !["I'm sorry, I don't know."].includes(answer)) {
+            if (answer != '' && !["I'm sorry, I don't know."].includes(answer)) {
                 let watiAccountDetails = await redishandler.LRANGE(
                     serviceconfig.cachekeys.WATISERVER,
                     0,
@@ -81,13 +104,12 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                     (row) => JSON.parse(row).watiserverid == watiserverid
                 );
                 watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
-                HBLogger.info('--------- wati account details ----------', watiaccount);
                 await sendWhatsappMessage(
                     senderName,
                     waId,
                     watiaccount.endpoint,
                     watiaccount.token,
-                    response.result,
+                    answer,
                     text
                 );
             }
@@ -101,7 +123,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 whatsappmessageid: whatsappMessageId,
                 waticonversationid: conversationId,
                 question: text,
-                answer: response.result,
+                answer,
                 waid: waId,
                 eventtype: eventType,
                 watiserverid,
