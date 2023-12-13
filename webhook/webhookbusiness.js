@@ -89,6 +89,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 const response = await getAIResponse(text, JSON.parse(provider));
 
                 answer = response.result || '';
+                HBLogger.info(`response from Eden AI: ${answer}`);
             }
 
             // 4. Send the response to the user
