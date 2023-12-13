@@ -24,7 +24,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             waId,
             eventType,
         } = req.body;
-        HBLogger.info(
+            HBLogger.info(
             `webhookBusiness.chatWebhook call in with input: ${JSON.stringify(
                 req.body
             )}`
@@ -67,6 +67,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             });
 
             if (staticResponse) {
+                HBLogger.info(`static response found: ${staticResponse}`);
                 answer = staticResponse;
             } else {
                 // 2. Get AI providers from redis
