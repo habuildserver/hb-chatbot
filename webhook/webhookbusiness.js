@@ -7,6 +7,7 @@ const serviceconfig = require(process.cwd() + '/configuration/serviceconfig');
 const { getAIResponse } = require(process.cwd() + '/utility/aiservice');
 const { sendWhatsappMessage } = require(process.cwd() + '/utility/watihelper');
 const { pushToQueue } = require(process.cwd() + '/queue/producer');
+const emoji = require('node-emoji');
 
 let webhookBusiness = () => ({});
 
@@ -20,10 +21,11 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             created,
             whatsappMessageId,
             conversationId,
-            text,
+            text: originalText,
             waId,
             eventType,
         } = req.body;
+        const text = emoji.strip(originalText);
             HBLogger.info(
             `webhookBusiness.chatWebhook call in with input: ${JSON.stringify(
                 req.body
