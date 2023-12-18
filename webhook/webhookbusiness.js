@@ -68,12 +68,6 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 if ((text.length < genericKeyword.lengthToCheck) && (text.toLowerCase().includes(genericKeyword.question.toLowerCase()))) {
                     staticResponse = genericKeyword.answer
                 }
-
-                // Check for numbers
-                const hasNumbers = /\d/.test(text);
-                if (hasNumbers) {
-                    throw new Error('Numbers are not allowed in the text');
-                }
             });
 
             if (staticResponse) {
