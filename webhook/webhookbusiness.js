@@ -25,7 +25,9 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             waId,
             eventType,
         } = req.body;
-        const text = emoji.strip(originalText);
+        const text = emoji.strip(originalText, {
+            preserveSpaces: false
+        });
             HBLogger.info(
             `webhookBusiness.chatWebhook call in with input: ${JSON.stringify(
                 req.body
@@ -63,7 +65,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
 
             genericKeywordList.map((genericKeywordString) => {
                 const genericKeyword = JSON.parse(genericKeywordString);
-                if (text.length < genericKeyword.lengthToCheck && text.toLowerCase().includes(genericKeyword.question)) {
+                if ((text.length < genericKeyword.lengthToCheck) && (text.toLowerCase().includes(genericKeyword.question.toLowerCase()))) {
                     staticResponse = genericKeyword.answer
                 }
 
