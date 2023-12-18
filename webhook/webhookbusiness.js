@@ -47,7 +47,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             );
 
             restrictedKeywordList.map((restrictedKeyword) => {
-                if ((text.length === restrictedKeyword.length) && (text.toLowerCase().includes(restrictedKeyword.toLowerCase()))) {
+                if ((text.length <= restrictedKeyword.length + 3) && (text.toLowerCase().includes(restrictedKeyword.toLowerCase()))) {
                     throw new Error('Restricted keyword');
                 }
             });
