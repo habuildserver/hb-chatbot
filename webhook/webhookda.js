@@ -12,9 +12,10 @@ const webhookDa = () => {};
 
 webhookDa.addChatDetails = async (chatDetail) => {
     HBLogger.info(`in addChatDetails call start ${JSON.stringify(chatDetail)}`,);
+    const chatDetailId =  chatDetail.id ? chatDetail.id : 'NA';
     let queryResult = await processQueryWithFilters(
         INSERT_CHAT_DETAIL,
-        [chatDetail?.id, chatDetail?.name, chatDetail?.chatrequesttimestamp,
+        [chatDetailId, chatDetail?.name, chatDetail?.chatrequesttimestamp,
             chatDetail?.whatsappmessageid, chatDetail?.waticonversationid, chatDetail?.question, chatDetail?.answer,
             chatDetail?.waid, chatDetail?.eventtype, chatDetail?.watiserverid]
     );
