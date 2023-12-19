@@ -11,7 +11,7 @@ const processQueryWithFilters = async (query = '', filters = []) => {
 const webhookDa = () => {};
 
 webhookDa.addChatDetails = async (chatDetail) => {
-    HBLogger.info(`in addChatDetails call start`);
+    HBLogger.info(`in addChatDetails call start `, JSON.stringify(chatDetail));
     let queryResult = await processQueryWithFilters(
         INSERT_CHAT_DETAIL,
         [chatDetail?.id, chatDetail?.name, chatDetail?.chatrequesttimestamp,
