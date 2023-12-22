@@ -83,8 +83,6 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             );
             watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
 
-            console.log(watiaccount, '=-=-=-=-=-=-=-= wati account =-=-=-=-=-=');
-
             if (staticResponse) {
                 HBLogger.info(`static response found: ${staticResponse}`);
                 answer = staticResponse;
@@ -97,11 +95,14 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                         serviceconfig.cachekeys.BEETUSERVER
                     );
 
-                    console.log(beetuProvider, '--=-=-=-=-=-=-=-=-=-=-')
+                    const beetuQueryObj = {
+                        question: text,
+                        user_id: waId
+                    }
 
-                    const response = await getBeetuResponse(text, JSON.parse(beetuProvider));
+                    const response = await getBeetuResponse(beetuQueryObj, JSON.parse(beetuProvider));
 
-                    answer = response.result || '';
+                    answer = response.answer || '';
                     HBLogger.info(`response from Beetu: ${answer}`);
 
                 } else {
