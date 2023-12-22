@@ -3,7 +3,7 @@ const HBLogger = require(process.cwd() + '/utility/logger').logger;
 
 // create a new Redis client
 const redisClient = redis.createClient({
-    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+    url: process.env.REDIS_CONNECTION_URL,
 });
 
 try {
