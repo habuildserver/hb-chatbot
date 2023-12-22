@@ -142,20 +142,22 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
 
             //5 . Save the conversation in the Redis cache
 
-            const chatDetails = {
-                id,
-                name: senderName,
-                chatrequesttimestamp: new Date(created),
-                whatsappmessageid: whatsappMessageId,
-                waticonversationid: conversationId,
-                question: text,
-                answer,
-                waid: waId,
-                eventtype: eventType,
-                watiserverid,
-            };
+            if (watiaccount.responder !== 'beetu') {
+                const chatDetails = {
+                    id,
+                    name: senderName,
+                    chatrequesttimestamp: new Date(created),
+                    whatsappmessageid: whatsappMessageId,
+                    waticonversationid: conversationId,
+                    question: text,
+                    answer,
+                    waid: waId,
+                    eventtype: eventType,
+                    watiserverid,
+                };
 
-            await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
+                await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
+            }
 
         } else {
             HBLogger.info(
