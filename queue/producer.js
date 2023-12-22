@@ -1,16 +1,25 @@
 const { Kafka, CompressionTypes } = require('kafkajs')
 const HBLogger = require(process.cwd() + '/utility/logger').logger;
 
-const kafka = new Kafka({
-    clientId: process.env.KAFKA_PRODUCER_CLIENT_ID,
+const configProd = {
+    clientId: process.env.KAFKA_CONSUMER_CLIENT_ID,
+    brokers: process.env.KAFKA_BROKER.split(',')
+}
+
+const configNonProd = {
+    clientId: process.env.KAFKA_CONSUMER_CLIENT_ID,
     brokers: process.env.KAFKA_BROKER.split(','),
-    // ssl: process.env.KAFKA_SSL,
-    // sasl: {
-    //     mechanism: process.env.KAFKA_SASL_MECHANISM,
-    //     username: process.env.KAFKA_SASL_USERNAME,
-    //     password: process.env.KAFKA_SASL_PASSWORD
-    // },
-})
+    ssl: process.env.KAFKA_SSL,
+    sasl: {
+        mechanism: process.env.KAFKA_SASL_MECHANISM,
+        username: process.env.KAFKA_SASL_USERNAME,
+        password: process.env.KAFKA_SASL_PASSWORD
+    },
+}
+
+const config = process.env.NODE_ENV === 'production' ? configProd : configNonProd
+
+const kafka = new Kafka(config);
 
 const pushToQueue = async (topic, message) => {
 
