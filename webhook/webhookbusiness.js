@@ -38,7 +38,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         // Subtract 5 seconds (5 * 1000 milliseconds) from the current date
         let newDate = new Date(currentDate.getTime() - 5000);
         let webhookRequestDate = new Date(created);
-        if (true) {
+        if (webhookRequestDate > newDate) {
 
             let restrictedKeywordList = await redishandler.LRANGE(
                 serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
