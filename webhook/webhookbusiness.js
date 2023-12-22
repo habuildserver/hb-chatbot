@@ -4,7 +4,7 @@ const HBLogger = require(process.cwd() + '/utility/logger').logger;
 const { commonFunctions } = require(process.cwd() + '/utility/commonfunctions');
 const { redishandler } = require(process.cwd() + '/utility/redishandler');
 const serviceconfig = require(process.cwd() + '/configuration/serviceconfig');
-const { getAIResponse } = require(process.cwd() + '/utility/aiservice');
+const { getAIResponse, getBeetuResponse } = require(process.cwd() + '/utility/aiservice');
 const { sendWhatsappMessage } = require(process.cwd() + '/utility/watihelper');
 const { pushToQueue } = require(process.cwd() + '/queue/producer');
 const emoji = require('node-emoji');
@@ -38,7 +38,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         // Subtract 5 seconds (5 * 1000 milliseconds) from the current date
         let newDate = new Date(currentDate.getTime() - 5000);
         let webhookRequestDate = new Date(created);
-        if (webhookRequestDate > newDate) {
+        if (true) {
 
             let restrictedKeywordList = await redishandler.LRANGE(
                 serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
@@ -83,6 +83,8 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             );
             watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
 
+            console.log(watiaccount, '=-=-=-=-=-=-=-= wati account =-=-=-=-=-=');
+
             if (staticResponse) {
                 HBLogger.info(`static response found: ${staticResponse}`);
                 answer = staticResponse;
@@ -90,6 +92,17 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 // 2. Get AI providers from redis
 
                 if (watiaccount.responder === 'beetu') {
+
+                    let beetuProvider = await redishandler.get(
+                        serviceconfig.cachekeys.BEETUSERVER
+                    );
+
+                    console.log(beetuProvider, '--=-=-=-=-=-=-=-=-=-=-')
+
+                    const response = await getBeetuResponse(text, JSON.parse(beetuProvider));
+
+                    answer = response.result || '';
+                    HBLogger.info(`response from Beetu: ${answer}`);
 
                 } else {
                     let apiProvidersList = await redishandler.LRANGE(
