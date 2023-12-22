@@ -70,46 +70,52 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 }
             });
 
+            let watiAccountDetails = await redishandler.LRANGE(
+                serviceconfig.cachekeys.WATISERVER,
+                0,
+                -1
+            );
+            watiAccountDetails = watiAccountDetails
+                ? watiAccountDetails
+                : [];
+            let watiaccount = watiAccountDetails.find(
+                (row) => JSON.parse(row).watiserverid == watiserverid
+            );
+            watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
+
             if (staticResponse) {
                 HBLogger.info(`static response found: ${staticResponse}`);
                 answer = staticResponse;
             } else {
                 // 2. Get AI providers from redis
-                let apiProvidersList = await redishandler.LRANGE(
-                    serviceconfig.cachekeys.MASTERAIPROVIDER,
-                    0,
-                    -1
-                );
 
-                apiProvidersList = apiProvidersList ? apiProvidersList : [];
+                if (watiaccount.responder === 'beetu') {
 
-                const provider = apiProvidersList.reduce((acc, cur) => {
-                    return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt
-                        ? JSON.parse(cur)
-                        : JSON.parse(acc);
-                });
+                } else {
+                    let apiProvidersList = await redishandler.LRANGE(
+                        serviceconfig.cachekeys.MASTERAIPROVIDER,
+                        0,
+                        -1
+                    );
 
-                // 3. Call AI provider
-                const response = await getAIResponse(text, JSON.parse(provider));
+                    apiProvidersList = apiProvidersList ? apiProvidersList : [];
 
-                answer = response.result || '';
-                HBLogger.info(`response from Eden AI: ${answer}`);
+                    const provider = apiProvidersList.reduce((acc, cur) => {
+                        return JSON.parse(acc).requestcnt < JSON.parse(cur).requestcnt
+                            ? JSON.parse(cur)
+                            : JSON.parse(acc);
+                    });
+
+                    // 3. Call AI provider
+                    const response = await getAIResponse(text, JSON.parse(provider));
+
+                    answer = response.result || '';
+                    HBLogger.info(`response from Eden AI: ${answer}`);
+                }
             }
 
             // 4. Send the response to the user
             if (answer != '' && !["I'm sorry, I don't know."].includes(answer)) {
-                let watiAccountDetails = await redishandler.LRANGE(
-                    serviceconfig.cachekeys.WATISERVER,
-                    0,
-                    -1
-                );
-                watiAccountDetails = watiAccountDetails
-                    ? watiAccountDetails
-                    : [];
-                let watiaccount = watiAccountDetails.find(
-                    (row) => JSON.parse(row).watiserverid == watiserverid
-                );
-                watiaccount = watiaccount ? JSON.parse(watiaccount) : {};
                 await sendWhatsappMessage(
                     senderName,
                     waId,
