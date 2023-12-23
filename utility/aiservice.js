@@ -36,4 +36,39 @@ const getAIResponse = async (query, optionObj) => {
     }
 };
 
-module.exports = { getAIResponse };
+
+const getBeetuRequestOption = (queryObj, optionObj) => {
+    const { endpoint, token } = optionObj;
+    const { question, user_id } = queryObj
+    return {
+        method: 'POST',
+        url: endpoint,
+        headers: {
+            "x-beetu-api-key": token,
+            "Content-Type": 'application/json'
+        },
+        data: {
+            question,
+            user_id
+        },
+    };
+};
+
+const getBeetuResponse = async (query, optionObj) => {
+    try {
+        const option = getBeetuRequestOption(query, optionObj);
+        const response = await fetch(option.url, {
+            method: option.method,
+            headers: option.headers,
+            body: JSON.stringify(option.data),
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        const { message, stack } = error;
+        HBLogger.error(`Error in getBeetuResponse: ${message} ${stack}`);
+        return null;
+    }
+};
+
+module.exports = { getAIResponse, getBeetuResponse };
