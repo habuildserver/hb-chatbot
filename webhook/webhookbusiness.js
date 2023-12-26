@@ -56,6 +56,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
 
             let answer = '';
             let staticResponse = undefined;
+            let responder = null;
 
             let genericKeywordList = await redishandler.LRANGE(
                 serviceconfig.cachekeys.GENERIC_KEYWORDS,
@@ -86,6 +87,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             if (staticResponse) {
                 HBLogger.info(`static response found: ${staticResponse}`);
                 answer = staticResponse;
+                responder = 'SERVICE';
             } else {
                 // 2. Get AI providers from redis
 
@@ -103,6 +105,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                     const response = await getBeetuResponse(beetuQueryObj, JSON.parse(beetuProvider));
 
                     answer = response.answer || '';
+                    responder = 'BEETU';
                     HBLogger.info(`response from Beetu: ${answer}`);
 
                 } else {
@@ -124,6 +127,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                     const response = await getAIResponse(text, JSON.parse(provider));
 
                     answer = response.result || '';
+                    responder = 'EDEN';
                     HBLogger.info(`response from Eden AI: ${answer}`);
                 }
             }
@@ -142,22 +146,21 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
 
             //5 . Save the conversation in the Redis cache
 
-            if (watiaccount.responder !== 'beetu') {
-                const chatDetails = {
-                    id,
-                    name: senderName,
-                    chatrequesttimestamp: new Date(created),
-                    whatsappmessageid: whatsappMessageId,
-                    waticonversationid: conversationId,
-                    question: text,
-                    answer,
-                    waid: waId,
-                    eventtype: eventType,
-                    watiserverid,
-                };
+            const chatDetails = {
+                id,
+                name: senderName,
+                chatrequesttimestamp: new Date(created),
+                whatsappmessageid: whatsappMessageId,
+                waticonversationid: conversationId,
+                question: text,
+                answer,
+                waid: waId,
+                eventtype: eventType,
+                watiserverid,
+                responder
+            };
 
-                await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
-            }
+            await pushToQueue(process.env.KAFKA_SAVE_CHAT_TOPIC, chatDetails);
 
         } else {
             HBLogger.info(

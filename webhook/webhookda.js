@@ -17,7 +17,7 @@ webhookDa.addChatDetails = async (chatDetail) => {
         INSERT_CHAT_DETAIL,
         [chatDetailId, chatDetail?.name, chatDetail?.chatrequesttimestamp,
             chatDetail?.whatsappmessageid, chatDetail?.waticonversationid, chatDetail?.question, chatDetail?.answer,
-            chatDetail?.waid, chatDetail?.eventtype, chatDetail?.watiserverid]
+            chatDetail?.waid, chatDetail?.eventtype, chatDetail?.watiserverid, chatDetail?.responder]
     );
     HBLogger.info(
         `managementDa.addChatDetails call end queryResult ${JSON.stringify(queryResult?.rows)} `
