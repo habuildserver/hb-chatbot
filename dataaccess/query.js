@@ -16,7 +16,7 @@ const INSERT_CHAT_DETAILS_IN_BULK = (bulkDetails) => {
 }
 
 const SELECT_MEMBER_CHAT_DETAILS = `
-  SELECT m."name", m.waid, hwd.endpoint, m.question, m.answer 
+  SELECT m."name", m.waid, hwd.endpoint, m.question, m.answer, m.createdat 
   FROM memberchatdetails m 
   INNER JOIN habuild_watiserver_details hwd ON m.watiserverid = hwd.watiserverid 
   WHERE m.waid = $1 
