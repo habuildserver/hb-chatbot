@@ -15,7 +15,15 @@ const INSERT_CHAT_DETAILS_IN_BULK = (bulkDetails) => {
                             VALUES ${values.join(',')};`
 }
 
+const SELECT_MEMBER_CHAT_DETAILS = `
+  SELECT m."name", m.waid, hwd.endpoint, m.question, m.answer 
+  FROM memberchatdetails m 
+  INNER JOIN habuild_watiserver_details hwd ON m.watiserverid = hwd.watiserverid 
+  WHERE m.waid = $1 
+  ORDER BY m.createdat DESC;`;
+
 module.exports = {
     INSERT_CHAT_DETAIL,
-    INSERT_CHAT_DETAILS_IN_BULK
+    INSERT_CHAT_DETAILS_IN_BULK,
+    SELECT_MEMBER_CHAT_DETAILS
 };
