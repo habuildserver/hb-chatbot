@@ -6,7 +6,7 @@
   "scripts": {
     "test": "",
     "start": "node server",
-    "dev": "cross-env NODE_ENV=development node server",
+    "dev": "cross-env NODE_ENV=development nodemon server",
     "prod": "cross-env NODE_ENV=production node server",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",

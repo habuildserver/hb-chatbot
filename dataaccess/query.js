@@ -1,6 +1,6 @@
 const INSERT_CHAT_DETAIL = `INSERT INTO memberchatdetails (id, name, chatrequesttimestamp, whatsappmessageid,
-                            waticonversationid, question, answer, waid, eventtype, watiserverid)
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`
+                            waticonversationid, question, answer, waid, eventtype, watiserverid, responder)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`
 
 const INSERT_CHAT_DETAILS_IN_BULK = (bulkDetails) => {
     let values = [];
@@ -15,7 +15,14 @@ const INSERT_CHAT_DETAILS_IN_BULK = (bulkDetails) => {
                             VALUES ${values.join(',')};`
 }
 
+const SELECT_MEMBER_CHAT_DETAILS = `
+select m."name", m.waid, hwd.endpoint, m.question, m.answer, m.createdat, m.waticonversationid  from memberchatdetails m inner join habuild_watiserver_details hwd
+on m.watiserverid = hwd.watiserverid  
+where waid ilike $1 order by m.createdat desc;
+`;
+
 module.exports = {
     INSERT_CHAT_DETAIL,
-    INSERT_CHAT_DETAILS_IN_BULK
+    INSERT_CHAT_DETAILS_IN_BULK,
+    SELECT_MEMBER_CHAT_DETAILS
 };
