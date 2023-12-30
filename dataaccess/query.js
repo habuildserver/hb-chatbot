@@ -16,11 +16,10 @@ const INSERT_CHAT_DETAILS_IN_BULK = (bulkDetails) => {
 }
 
 const SELECT_MEMBER_CHAT_DETAILS = `
-  SELECT m."name", m.waid, hwd.endpoint, m.question, m.answer, m.createdat 
-  FROM memberchatdetails m 
-  INNER JOIN habuild_watiserver_details hwd ON m.watiserverid = hwd.watiserverid 
-  WHERE m.waid = $1 
-  ORDER BY m.createdat DESC;`;
+select m."name", m.waid, hwd.endpoint, m.question, m.answer, m.createdat, m.waticonversationid  from memberchatdetails m inner join habuild_watiserver_details hwd
+on m.watiserverid = hwd.watiserverid  
+where waid ilike $1 order by m.createdat desc;
+`;
 
 module.exports = {
     INSERT_CHAT_DETAIL,

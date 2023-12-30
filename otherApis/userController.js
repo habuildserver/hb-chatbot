@@ -5,9 +5,8 @@ let userController = {};
 userController.searchChatHistoryByMobile = async (req, res, next) => {
   try {
     const { mobileNumber } = req.params;
-    const searchResult = await chatService.retrieveMemberChats(mobileNumber);
-
-    // Check if searchResult and searchResult.rows are defined
+    const updateMobileNumber = `%${mobileNumber}%`;
+    const searchResult = await chatService.retrieveMemberChats(updateMobileNumber);
     if (searchResult && searchResult.rows) {
       if (searchResult.rows.length > 0) {
         res.json({
@@ -22,7 +21,6 @@ userController.searchChatHistoryByMobile = async (req, res, next) => {
         });
       }
     } else {
-      // Handle the case where searchResult or searchResult.rows is undefined
       res.status(500).json({
         status: 'error',
         message: 'Failed to retrieve member chat history',
