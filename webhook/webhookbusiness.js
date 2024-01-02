@@ -38,7 +38,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
         // Subtract 5 seconds (5 * 1000 milliseconds) from the current date
         let newDate = new Date(currentDate.getTime() - 5000);
         let webhookRequestDate = new Date(created);
-        if (webhookRequestDate > newDate) {
+        if (true) {
 
             let restrictedKeywordList = await redishandler.LRANGE(
                 serviceconfig.cachekeys.RESTRICTED_KEYWORDS,
@@ -133,7 +133,9 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             }
 
             // 4. Send the response to the user
-            if (answer != '' && !["I'm sorry, I don't know."].includes(answer)) {
+            if (answer === '' || ["I'm sorry, I don't know."].includes(answer) || answer === 'BEETU_STOP') {
+                HBLogger.info(`Not sending the response back as AI's answer is: ${answer}`);
+            } else {
                 await sendWhatsappMessage(
                     senderName,
                     waId,
