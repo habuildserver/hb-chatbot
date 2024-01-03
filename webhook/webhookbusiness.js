@@ -22,6 +22,8 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             whatsappMessageId,
             conversationId,
             text: originalText,
+            type,
+            data,
             waId,
             eventType,
         } = req.body;
@@ -33,6 +35,26 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 req.body
             )}`
         );
+        
+        if (type === 'image' || type === 'video') {
+            HBLogger.info(`webhookbusiness.chatWebhook call in with type ${type}`)
+
+            const mediaChatDetails = {
+                name: senderName,
+                chatrequesttimestamp: new Date(created),
+                whatsappmessageid: whatsappMessageId,
+                url: data,
+                waid: waId,
+                eventtype: eventType,
+                watiserverid,
+            };
+
+            await pushToQueue(
+                process.env.KAFKA_SAVE_MEDIA_CHAT_TOPIC,
+                mediaChatDetails
+            );
+
+        } 
 
         let currentDate = new Date();
         // Subtract 5 seconds (5 * 1000 milliseconds) from the current date
