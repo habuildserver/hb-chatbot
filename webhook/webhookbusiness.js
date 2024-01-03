@@ -155,7 +155,9 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             }
 
             // 4. Send the response to the user
-            if (answer != '' && !["I'm sorry, I don't know."].includes(answer)) {
+            if (answer === '' || ["I'm sorry, I don't know."].includes(answer) || answer === 'BEETU_STOP') {
+                HBLogger.info(`Not sending the response back as AI's answer is: ${answer}`);
+            } else {
                 await sendWhatsappMessage(
                     senderName,
                     waId,
