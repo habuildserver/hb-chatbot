@@ -48,7 +48,7 @@ webhookDa.addMediaChatDetails = async (mediaChatDetail) => {
         mediaChatDetail?.name,
         mediaChatDetail?.chatrequesttimestamp,
         mediaChatDetail?.whatsappmessageid,
-        mediaChatDetail?.data,
+        mediaChatDetail?.url,
         mediaChatDetail?.waid,
         mediaChatDetail?.eventtype,
         mediaChatDetail?.watiserverid,
