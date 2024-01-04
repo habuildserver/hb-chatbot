@@ -48,10 +48,11 @@ webhookDa.addMediaChatDetails = async (mediaChatDetail) => {
         mediaChatDetail?.name,
         mediaChatDetail?.chatrequesttimestamp,
         mediaChatDetail?.whatsappmessageid,
-        mediaChatDetail?.data,
+        mediaChatDetail?.url,
         mediaChatDetail?.waid,
         mediaChatDetail?.eventtype,
         mediaChatDetail?.watiserverid,
+        mediaChatDetail?.type
     ]);
     HBLogger.info(
         `managementDa.addMediaChatDetails call end queryResult ${JSON.stringify(
