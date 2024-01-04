@@ -36,14 +36,17 @@ const consumeFromQueue = async (consumerGroup, topic) => {
                 case process.env.KAFKA_SAVE_CHAT_TOPIC:
                     await webhookDa.addChatDetails(JSON.parse(message.value));
                     break;
+                case process.env.KAFKA_SAVE_MEDIA_CHAT_TOPIC:
+                    await webhookDa.addMediaChatDetails(
+                        JSON.parse(message.value)
+                    );
+                    break;
                 case process.env.KAFKA_TEST_TOPIC:
                     HBLogger.info(`message received on TEST TOPIC`);
                     console.log(JSON.parse(message.value));
                     break;
-                case process.env.KAFKA_SAVE_MEDIA_CHAT_TOPIC:
-                    await webhookDa.addMediaChatDetails(JSON.parse(message.value));
                 default:
-                    HBLogger.error(`unknown topic: `, topic)
+                    HBLogger.error(`unknown topic: `, topic);
             }
         },
         // eachBatchAutoResolve: true,
@@ -79,4 +82,7 @@ const consumeFromQueue = async (consumerGroup, topic) => {
 module.exports = {
     consumeFromQueue
 }
+
+
+
 
