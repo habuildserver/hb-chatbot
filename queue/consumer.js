@@ -34,12 +34,12 @@ const consumeFromQueue = async (consumerGroup, topic) => {
         eachMessage: async ({ topic, partition, message }) => {
             switch (topic) {
                 case process.env.KAFKA_SAVE_CHAT_TOPIC:
+                    HBLogger.info(`message received on KAFKA_SAVE_CHAT_TOPIC`);
                     await webhookDa.addChatDetails(JSON.parse(message.value));
                     break;
                 case process.env.KAFKA_SAVE_MEDIA_CHAT_TOPIC:
-                    await webhookDa.addMediaChatDetails(
-                        JSON.parse(message.value)
-                    );
+                    HBLogger.info(`message received on KAFKA_SAVE_MEDIA_CHAT_TOPIC`);
+                    await webhookDa.addMediaChatDetails(JSON.parse(message.value));
                     break;
                 case process.env.KAFKA_TEST_TOPIC:
                     HBLogger.info(`message received on TEST TOPIC`);
