@@ -45,13 +45,13 @@ webhookDa.addMediaChatDetails = async (mediaChatDetail) => {
         `in addMediaChatDetails call start ${JSON.stringify(mediaChatDetail)}`
     );
     let queryResult = await processQueryWithFilters(INSERT_MEDIA_CHAT_DETAILS, [
-        chatDetail?.name,
-        chatDetail?.chatrequesttimestamp,
-        chatDetail?.whatsappmessageid,
-        chatDetail?.data,
-        chatDetail?.waid,
-        chatDetail?.eventtype,
-        chatDetail?.watiserverid,
+        mediaChatDetail?.name,
+        mediaChatDetail?.chatrequesttimestamp,
+        mediaChatDetail?.whatsappmessageid,
+        mediaChatDetail?.data,
+        mediaChatDetail?.waid,
+        mediaChatDetail?.eventtype,
+        mediaChatDetail?.watiserverid,
     ]);
     HBLogger.info(
         `managementDa.addMediaChatDetails call end queryResult ${JSON.stringify(
