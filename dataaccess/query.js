@@ -20,9 +20,21 @@ select m."name", m.waid, hwd.endpoint, m.question, m.answer, m.createdat, m.wati
 on m.watiserverid = hwd.watiserverid  
 where waid ilike $1 order by m.createdat desc;
 `;
+const INSERT_MEDIA_CHAT_DETAILS = `INSERT INTO membermediachat (name, chatrequesttimestamp, whatsappmessageid, url, waid, eventtype, watiserverid)
+                                   VALUES ($1, $2, $3, $4, $5, $6, $7)`;
+
+const SELECT_MEMBER_MEDIA_CHAT_DETAILS = `select * from membermediachat order by membermediachatid`;
+
+const UPDATE_RESOLVED_STATUS = `
+update membermediachat set isresolved = $2 
+where membermediachatid = $1
+`;
 
 module.exports = {
     INSERT_CHAT_DETAIL,
     INSERT_CHAT_DETAILS_IN_BULK,
-    SELECT_MEMBER_CHAT_DETAILS
+    SELECT_MEMBER_CHAT_DETAILS,
+    INSERT_MEDIA_CHAT_DETAILS,
+    SELECT_MEMBER_MEDIA_CHAT_DETAILS,
+    UPDATE_RESOLVED_STATUS,
 };

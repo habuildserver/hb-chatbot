@@ -23,6 +23,8 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             whatsappMessageId,
             conversationId,
             text: originalText,
+            type,
+            data,
             waId,
             eventType,
         } = req.body;
@@ -34,6 +36,26 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 req.body
             )}`
         );
+        
+        if (type === 'image' || type === 'video') {
+            HBLogger.info(`webhookbusiness.chatWebhook call in with type ${type}`)
+
+            const mediaChatDetails = {
+                name: senderName,
+                chatrequesttimestamp: new Date(created),
+                whatsappmessageid: whatsappMessageId,
+                url: data,
+                waid: waId,
+                eventtype: eventType,
+                watiserverid,
+            };
+
+            await pushToQueue(
+                process.env.KAFKA_SAVE_MEDIA_CHAT_TOPIC,
+                mediaChatDetails
+            );
+
+        } 
 
         let currentDate = new Date();
         // Subtract 5 seconds (5 * 1000 milliseconds) from the current date
@@ -146,7 +168,9 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             }
 
             // 4. Send the response to the user
-            if (answer != '' && !["I'm sorry, I don't know."].includes(answer)) {
+            if (answer === '' || ["I'm sorry, I don't know."].includes(answer) || answer === 'BEETU_STOP') {
+                HBLogger.info(`Not sending the response back as AI's answer is: ${answer}`);
+            } else {
                 await sendWhatsappMessage(
                     senderName,
                     waId,

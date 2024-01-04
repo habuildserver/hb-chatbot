@@ -1,3 +1,5 @@
+const { INSERT_MEDIA_CHAT_DETAILS } = require("../dataaccess/query");
+
 const HBLogger = require(process.cwd() + '/utility/logger').logger;
 const dbHelper = require(process.cwd() + '/dataaccess/dbhelper');
 const { INSERT_CHAT_DETAIL,
@@ -35,6 +37,27 @@ webhookDa.addChatDetailsInBulk = async (bulkChatDetail) => {
     HBLogger.info(
         `managementDa.addChatDetailsInBulk call end queryResult ${JSON.stringify(queryResult?.rows)} `
     )
+    return queryResult;
+}
+
+webhookDa.addMediaChatDetails = async (mediaChatDetail) => {
+    HBLogger.info(
+        `in addMediaChatDetails call start ${JSON.stringify(mediaChatDetail)}`
+    );
+    let queryResult = await processQueryWithFilters(INSERT_MEDIA_CHAT_DETAILS, [
+        chatDetail?.name,
+        chatDetail?.chatrequesttimestamp,
+        chatDetail?.whatsappmessageid,
+        chatDetail?.data,
+        chatDetail?.waid,
+        chatDetail?.eventtype,
+        chatDetail?.watiserverid,
+    ]);
+    HBLogger.info(
+        `managementDa.addMediaChatDetails call end queryResult ${JSON.stringify(
+            queryResult?.rows
+        )} `
+    );
     return queryResult;
 }
 
