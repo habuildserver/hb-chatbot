@@ -32,21 +32,29 @@ const consumeFromQueue = async (consumerGroup, topic) => {
 
     await consumer.run({
         eachMessage: async ({ topic, partition, message }) => {
-            switch (topic) {
-                case process.env.KAFKA_SAVE_CHAT_TOPIC:
-                    HBLogger.info(`message received on KAFKA_SAVE_CHAT_TOPIC`);
-                    await webhookDa.addChatDetails(JSON.parse(message.value));
-                    break;
-                case process.env.KAFKA_SAVE_MEDIA_CHAT_TOPIC:
-                    HBLogger.info(`message received on KAFKA_SAVE_MEDIA_CHAT_TOPIC`);
-                    await webhookDa.addMediaChatDetails(JSON.parse(message.value));
-                    break;
-                case process.env.KAFKA_TEST_TOPIC:
-                    HBLogger.info(`message received on TEST TOPIC`);
-                    console.log(JSON.parse(message.value));
-                    break;
-                default:
-                    HBLogger.error(`unknown topic: `, topic);
+            try {
+                HBLogger.info(`message received on topic: ${topic}`);
+                HBLogger.info(process.env.KAFKA_SAVE_CHAT_TOPIC)
+                HBLogger.info(process.env.KAFKA_SAVE_MEDIA_CHAT_TOPIC)
+                switch (topic) {
+                    case process.env.KAFKA_SAVE_CHAT_TOPIC:
+                        HBLogger.info(`message received on KAFKA_SAVE_CHAT_TOPIC`);
+                        await webhookDa.addChatDetails(JSON.parse(message.value));
+                        break;
+                    case process.env.KAFKA_SAVE_MEDIA_CHAT_TOPIC:
+                        HBLogger.info(`message received on KAFKA_SAVE_MEDIA_CHAT_TOPIC`);
+                        await webhookDa.addMediaChatDetails(JSON.parse(message.value));
+                        break;
+                    case process.env.KAFKA_TEST_TOPIC:
+                        HBLogger.info(`message received on TEST TOPIC`);
+                        console.log(JSON.parse(message.value));
+                        break;
+                    default:
+                        HBLogger.error(`unknown topic: `, topic);
+                }
+            } catch (e) {
+                HBLogger.info(`Error on topic: ${topic}`);
+                throw new Error(e)
             }
         },
         // eachBatchAutoResolve: true,
