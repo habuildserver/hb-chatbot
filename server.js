@@ -9,6 +9,7 @@ const cors = require('cors');
 const useragent = require('express-useragent');
 const cookieParser = require('cookie-parser');
 const { consumeFromQueue } = require(process.cwd() + '/queue/consumer');
+const { consumeFromRabbitQueue } = require(process.cwd() + '/queue/rabbitmq/consumer')
 
 // app.use(useragent.express());
 
@@ -73,6 +74,8 @@ const server = http.createServer(app);
 
 consumeFromQueue(process.env.KAFKA_CONSUMER_GROUP, process.env.KAFKA_SAVE_CHAT_TOPIC);
 consumeFromQueue(process.env.KAFKA_TEST_CONSUMER_GROUP, process.env.KAFKA_TEST_TOPIC);
+consumeFromRabbitQueue(process.env.RABBITMQ_CHATBOT_TATATELE_QUEUE)
+consumeFromRabbitQueue(process.env.RABBITMQ_TEST_QUEUE)
 
 server.listen(parseInt(process.env.HABUILD_CHATBOT_PORT), function () {
     console.log(

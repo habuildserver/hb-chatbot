@@ -7,6 +7,7 @@ const serviceconfig = require(process.cwd() + '/configuration/serviceconfig');
 const { getAIResponse, getBeetuResponse } = require(process.cwd() + '/utility/aiservice');
 const { sendWhatsappMessage } = require(process.cwd() + '/utility/watihelper');
 const { pushToQueue } = require(process.cwd() + '/queue/producer');
+const { pushToRabbitQueueWithDelay } = require(process.cwd() + '/queue/rabbitmq/producer');
 const emoji = require('node-emoji');
 
 let webhookBusiness = () => ({});
@@ -43,6 +44,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             //// Call me logic via tata tele
             let callMeValid = await callMeCheck(text, waId);
             if (callMeValid) {
+                await webhookBusiness.postTataTeleClickToCall(waId, true)
                 res.locals.data = commonFunctions.createResponse({
                     status: 200,
                     message: 'Success',
@@ -192,8 +194,8 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
     return next();
 };
 
-let callMeCheck = async (text, waId) => {
-    HBLogger.info(`callMeCheck call in for waId: ${waId}`);
+let callMeCheck = async (text) => {
+    HBLogger.info(`callMeCheck call for: ${text}`);
     let callMe = false;
     let callMeKeywordList = await redishandler.LRANGE(
         serviceconfig.cachekeys.CALLMEKEYWORDS,
@@ -207,48 +209,76 @@ let callMeCheck = async (text, waId) => {
         }
     });
 
-    if (callMe) {
-        HBLogger.info(`callMeCheck for waId: ${waId} call me text: ${text} as input`);
-        let agentNumber = await redishandler.get(
-            serviceconfig.cachekeys.TATATELEAGENTNUMBER
-        );
-
-        const isAgentFree = await getAvailableAgents(agentNumber);
-        HBLogger.info(`callMeCheck for waId: ${waId} and isAgentFree: ${isAgentFree}`);
-        let input = {
-            "agent_number": agentNumber,
-            "destination_number": waId,
-            "caller_id": agentNumber,
-            "custom_identifier": "CLICK_TO_CALL_BY_HB_Job",
-            "call_timeout": 300
-        };
-        postTataTeleClickToCall(input, isAgentFree);
-    }
     return callMe;
 }
 
-let postTataTeleClickToCall = async (data, isAgentFree) => {
-    try {
-        HBLogger.info(`postTataTeleClickToCall call in for waId: ${data.destination_number} and isAgentFree: ${isAgentFree}`);
-        if(isAgentFree){
+webhookBusiness.postTataTeleClickToCall = async (waId, agentCheck) => {
+
+    HBLogger.info(`postTataTeleClickToCall for waId: ${waId}`);
+
+    let agentNumber = await redishandler.get(
+        serviceconfig.cachekeys.TATATELEAGENTNUMBER
+    );
+
+    const isAgentFree = await getAvailableAgents(agentNumber);
+    HBLogger.info(`callMeCheck for waId: ${waId} and isAgentFree: ${isAgentFree}`);
+    let input = {
+        "agent_number": agentNumber,
+        "destination_number": waId,
+        "caller_id": agentNumber,
+        "custom_identifier": "CLICK_TO_CALL_BY_HB_Job",
+        "call_timeout": 300
+    };
+
+    if (agentCheck) {
+        try {
+            HBLogger.info(`postTataTeleClickToCall call in for waId: ${input.destination_number} and isAgentFree: ${isAgentFree}`);
+            if(isAgentFree) {
+                fetch('https://api-smartflo.tatateleservices.com/v1/click_to_call', {
+                    method: 'POST',
+                    body: JSON.stringify(input),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Authorization": `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMxNzA4OCwiaXNzIjoiaHR0cHM6XC9cL2Nsb3VkcGhvbmUudGF0YXRlbGVzZXJ2aWNlcy5jb21cL3Rva2VuXC9nZW5lcmF0ZSIsImlhdCI6MTY4NzYwMDYxNywiZXhwIjoxOTg3NjAwNjE3LCJuYmYiOjE2ODc2MDA2MTcsImp0aSI6IkFpclNObWY5d1RIbndRT2IifQ.dQMiZV147llcXOq-dchSoUh5Vhh5wxz9I5rYkqgIQqc`
+                    }
+                });
+            } else {
+                //// schedule Call back after 5 minutes with message queue.
+                const queueData = {
+                    waId
+                }
+                await pushToRabbitQueueWithDelay(process.env.RABBITMQ_CHATBOT_TATATELE_QUEUE, queueData, process.env.RABBITMQ_CHATBOT_TATATELE_DELAY);
+            }
+
+        } catch (error) {
+            HBLogger.error(`postTataTeleClickToCall: Error in posting data: ${error.message}`);
+        }
+
+
+    } else {
+        try {
+            HBLogger.info(`postTataTeleClickToCall call without agent check for waId: ${input.destination_number} and isAgentFree: ${isAgentFree}`);
+
             fetch('https://api-smartflo.tatateleservices.com/v1/click_to_call', {
                 method: 'POST',
-                body: JSON.stringify(data),
+                body: JSON.stringify(input),
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMxNzA4OCwiaXNzIjoiaHR0cHM6XC9cL2Nsb3VkcGhvbmUudGF0YXRlbGVzZXJ2aWNlcy5jb21cL3Rva2VuXC9nZW5lcmF0ZSIsImlhdCI6MTY4NzYwMDYxNywiZXhwIjoxOTg3NjAwNjE3LCJuYmYiOjE2ODc2MDA2MTcsImp0aSI6IkFpclNObWY5d1RIbndRT2IifQ.dQMiZV147llcXOq-dchSoUh5Vhh5wxz9I5rYkqgIQqc`
                 }
             });
+
+        } catch (error) {
+            HBLogger.error(`postTataTeleClickToCall: Error in posting data: ${error.message}`);
         }
-        else{
-            //// schedule Call back after 5 minutes with message queue.
-        } 
-    } catch (error) {
-        HBLogger.error(`postTataTeleClickToCall: Error in posting data: ${error.message}`);
     }
+
+
+
 }
 
 let getAvailableAgents = async (agentNo) => {
+    HBLogger.info(`agentNo: ${agentNo}`);
     let availableAgent = true;
     let liveCallsResult = await fetch(`https://api-smartflo.tatateleservices.com/v1/live_calls`, {
         method: "GET",
