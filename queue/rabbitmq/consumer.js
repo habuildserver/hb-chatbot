@@ -9,9 +9,19 @@ const consumeFromRabbitQueue = async (queue) => {
     });
     channel.consume(queue, async (msg) => {
         console.log(`Received message on ${queue} with ${msg.content}`);
-        const { waId } = JSON.parse(msg.content);
-        console.log(waId);
-        await webhookBusiness.postTataTeleClickToCall(waId, false);
+
+        switch (queue) {
+            case process.env.RABBITMQ_CHATBOT_TATATELE_QUEUE:
+                const { waId } = JSON.parse(msg.content);
+                await webhookBusiness.postTataTeleClickToCall(waId, false);
+                break;
+            case process.env.RABBITMQ_TEST_QUEUE:
+                console.log(`message received on TEST QUEUE`);
+                console.log(JSON.parse(msg.content));
+                break;
+            default:
+                console.log(`unknown queue: `, queue)
+        }
     }, {
         noAck: true
     });
