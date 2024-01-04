@@ -271,7 +271,7 @@ webhookBusiness.postTataTeleClickToCall = async (waId, agentCheck) => {
                 const queueData = {
                     waId
                 }
-                await pushToRabbitQueueWithDelay(process.env.RABBITMQ_CHATBOT_TATATELE_QUEUE, queueData, process.env.RABBITMQ_CHATBOT_TATATELE_DELAY);
+                await pushToRabbitQueueWithDelay(process.env.RABBITMQ_TATATELE_DELAY_EXCHANGE, queueData, process.env.RABBITMQ_CHATBOT_TATATELE_DELAY);
             }
 
         } catch (error) {
