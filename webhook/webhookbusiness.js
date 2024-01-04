@@ -48,6 +48,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 waid: waId,
                 eventtype: eventType,
                 watiserverid,
+                type
             };
 
             await pushToQueue(

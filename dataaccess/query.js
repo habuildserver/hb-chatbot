@@ -20,8 +20,8 @@ select m."name", m.waid, hwd.endpoint, m.question, m.answer, m.createdat, m.wati
 on m.watiserverid = hwd.watiserverid  
 where waid ilike $1 order by m.createdat desc;
 `;
-const INSERT_MEDIA_CHAT_DETAILS = `INSERT INTO membermediachat (name, chatrequesttimestamp, whatsappmessageid, url, waid, eventtype, watiserverid)
-                                   VALUES ($1, $2, $3, $4, $5, $6, $7)`;
+const INSERT_MEDIA_CHAT_DETAILS = `INSERT INTO membermediachat (name, chatrequesttimestamp, whatsappmessageid, url, waid, eventtype, watiserverid, type)
+                                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
 
 const SELECT_MEMBER_MEDIA_CHAT_DETAILS = `select * from membermediachat order by membermediachatid`;
 
