@@ -5,7 +5,7 @@ const { commonFunctions } = require(process.cwd() + '/utility/commonfunctions');
 const { redishandler } = require(process.cwd() + '/utility/redishandler');
 const serviceconfig = require(process.cwd() + '/configuration/serviceconfig');
 const { getAIResponse, getBeetuResponse } = require(process.cwd() + '/utility/aiservice');
-const { sendWhatsappMessage } = require(process.cwd() + '/utility/watihelper');
+const { sendWhatsappMessage, sendWhatsappButtonMessage } = require(process.cwd() + '/utility/watihelper');
 const { pushToQueue } = require(process.cwd() + '/queue/producer');
 const emoji = require('node-emoji');
 
@@ -79,6 +79,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
 
             let answer = '';
             let staticResponse = undefined;
+            let staticResponseType = undefined;
             let responder = null;
 
             let genericKeywordList = await redishandler.LRANGE(
@@ -91,6 +92,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
                 const genericKeyword = JSON.parse(genericKeywordString);
                 if ((text.length < genericKeyword.lengthToCheck) && (text.toLowerCase().includes(genericKeyword.question.toLowerCase()))) {
                     staticResponse = genericKeyword.answer
+                    staticResponseType = genericKeyword.type
                 }
             });
 
@@ -159,14 +161,25 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             if (answer === '' || ["I'm sorry, I don't know."].includes(answer) || answer === 'BEETU_STOP') {
                 HBLogger.info(`Not sending the response back as AI's answer is: ${answer}`);
             } else {
-                await sendWhatsappMessage(
-                    senderName,
-                    waId,
-                    watiaccount.endpoint,
-                    watiaccount.token,
-                    answer,
-                    text
-                );
+                if (staticResponse && staticResponseType === 'button') {
+                    await sendWhatsappButtonMessage(
+                        senderName,
+                        waId,
+                        watiaccount.endpoint,
+                        watiaccount.token,
+                        answer,
+                        text
+                    );
+                } else {
+                    await sendWhatsappMessage(
+                        senderName,
+                        waId,
+                        watiaccount.endpoint,
+                        watiaccount.token,
+                        answer,
+                        text
+                    );
+                }
             }
 
             //5 . Save the conversation in the Redis cache
