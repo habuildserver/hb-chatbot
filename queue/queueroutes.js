@@ -6,6 +6,11 @@ let queueRoutes = [
         path: '/queue/:messageId',
         controller: queueService.sendMessage
     },
+    {
+        type: 'post',
+        path: '/delayed-message',
+        controller: queueService.sendMessageWithDelay
+    },
 ];
 
 module.exports = {
