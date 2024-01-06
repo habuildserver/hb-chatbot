@@ -334,7 +334,7 @@ let getAvailableAgents = async (agentNo) => {
         }
         else
         {
-            HBLogger.info(`getAvailableAgents call numberOfMatches for agentNo: ${agentNo} is >= 9 so availableAgent is false`);
+            HBLogger.info(`getAvailableAgents call numberOfMatches for agentNo: ${agentNo} is >= 9 so availableAgent is busy`);
             availableAgent = false; 
         }            
     }
