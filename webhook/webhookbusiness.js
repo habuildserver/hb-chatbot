@@ -67,13 +67,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             //// Call me logic via tata tele
             let callMeValid = await callMeCheck(text, waId);
             if (callMeValid) {
-                await webhookBusiness.postTataTeleClickToCall(waId, true)
-                res.locals.data = commonFunctions.createResponse({
-                    status: 200,
-                    message: 'Success',
-                    data: {},
-                });
-                return next();
+                webhookBusiness.postTataTeleClickToCall(waId, true);
             }
 
             let restrictedKeywordList = await redishandler.LRANGE(
