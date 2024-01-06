@@ -67,6 +67,7 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
             //// Call me logic via tata tele
             let callMeValid = await callMeCheck(text, waId);
             if (callMeValid) {
+                HBLogger.info(`webhookbusiness.chatWebhook callMeValid ${callMeValid} for waId: ${waId}`)
                 webhookBusiness.postTataTeleClickToCall(waId, true);
             }
 
@@ -213,8 +214,8 @@ webhookBusiness.chatWebhook = async (req, res, next) => {
     return next();
 };
 
-let callMeCheck = async (text) => {
-    HBLogger.info(`callMeCheck call for: ${text}`);
+let callMeCheck = async (text, waId) => {
+    HBLogger.info(`callMeCheck call in for: ${text} and waId: ${waId}`);
     let callMe = false;
     let callMeKeywordList = await redishandler.LRANGE(
         serviceconfig.cachekeys.CALLMEKEYWORDS,
@@ -227,7 +228,6 @@ let callMeCheck = async (text) => {
             callMe = true;
         }
     });
-
     return callMe;
 }
 
@@ -262,6 +262,7 @@ webhookBusiness.postTataTeleClickToCall = async (waId, agentCheck) => {
                     }
                 });
             } else {
+                HBLogger.info(`postTataTeleClickToCall call scheduled after 5 mins for waId: ${input.destination_number} and isAgentFree: ${isAgentFree}`);
                 //// schedule Call back after 5 minutes with message queue.
                 const queueData = {
                     waId
@@ -291,9 +292,6 @@ webhookBusiness.postTataTeleClickToCall = async (waId, agentCheck) => {
             HBLogger.error(`postTataTeleClickToCall: Error in posting data: ${error.message}`);
         }
     }
-
-
-
 }
 
 let getAvailableAgents = async (agentNo) => {
