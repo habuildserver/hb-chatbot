@@ -308,7 +308,7 @@ webhookBusiness.postTataTeleClickToCall = async (waId, agentCheck) => {
 }
 
 let getAvailableAgents = async (agentNo) => {
-    HBLogger.info(`agentNo: ${agentNo}`);
+    HBLogger.info(`getAvailableAgents call in agentNo: ${agentNo}`);
     let availableAgent = true;
     let liveCallsResult = await fetch(`https://api-smartflo.tatateleservices.com/v1/live_calls`, {
         method: "GET",
@@ -320,8 +320,23 @@ let getAvailableAgents = async (agentNo) => {
     liveCallsResult = await liveCallsResult.json();
 
     if (liveCallsResult && liveCallsResult.length > 0) {
-        const destinationKeys = liveCallsResult.map(obj => obj.did);
-        availableAgent = !destinationKeys.includes(`+${agentNo}`);
+        const numberOfMatches = liveCallsResult.reduce((count, obj) => {
+            if (obj.did == `+${agentNo}`) {
+              return count + 1;
+            }
+            return count;
+          }, 0);
+          
+        HBLogger.info(`getAvailableAgents call numberOfMatches for agentNo: ${agentNo} is ${numberOfMatches}`);
+        if (numberOfMatches && numberOfMatches < 9) {
+            HBLogger.info(`getAvailableAgents call numberOfMatches for agentNo: ${agentNo} is < 9`);
+            availableAgent = true;
+        }
+        else
+        {
+            HBLogger.info(`getAvailableAgents call numberOfMatches for agentNo: ${agentNo} is >= 9 so availableAgent is false`);
+            availableAgent = false; 
+        }            
     }
     return availableAgent;
 }
